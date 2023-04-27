@@ -1,16 +1,28 @@
 class GPRater:
-    def __init__(self):
-        self.character_factor = 0.95
-        self.artifact_factor = 1
-        self.weapon_factor = 1
+    character_factor = 0.95
+    artifact_factor = 1
+    weapon_factor = 1
 
-    def generate_power_rating(self, json_data) -> dict:
+    @staticmethod
+    def generate_power_details(json_data) -> dict:
         details = {
-            'rating': None,
+            'rating': {
+                'unweighted': 0,
+                'weighted': 0
+            },
             'totals': {
-                'characters': None,
-                'weapons': None,
-                'artifacts': None
+                'characters': {
+                    'unweighted': 0,
+                    'weighted': 0
+                },
+                'weapons': {
+                    'unweighted': 0,
+                    'weighted': 0
+                },
+                'artifacts': {
+                    'unweighted': 0,
+                    'weighted': 0
+                }
             },
             'per object rating': {
                 'characters': [],
@@ -90,6 +102,7 @@ class GPRater:
                 character_rating += equips["weapon"]["experience"]["level"]
                 character_rating += equips["weapon"]["stats"]["attack"] / 10
                 character_rating += attribute_rater(equips["weapon"]["stats"]["buff"])
+
             except KeyError:
                 pass
 
@@ -99,6 +112,15 @@ class GPRater:
             if character["experience"]["xp"] > 0 or character["experience"]["level"] > 1:
                 character_names.append(character_name)
                 character_ratings.append(character_rating)
+
+        characters_sorted = sorted(character_ratings)
+
+        zipped_characters = zip(characters_sorted, character_names)
+
+        sorted_names = [element for _, element in sorted(zipped_characters)]
+
+        for i in range(len(sorted_names)):
+            details['per object rating']['characters'].append({sorted_names[i]: characters_sorted[i]})
 
         # artifacts
         artifact_names = []
@@ -112,6 +134,15 @@ class GPRater:
             if artifact["experience"]["xp"] > 0 or artifact["experience"]["level"] > 1:
                 artifact_ratings.append(artifact_rating)
                 artifact_names.append(artifact_name)
+
+        artifacts_sorted = sorted(artifact_ratings)
+
+        zipped_artifacts = zip(artifacts_sorted, artifact_names)
+
+        sorted_names = [element for _, element in sorted(zipped_artifacts)]
+
+        for i in range(len(sorted_names)):
+            details['per object rating']['artifacts'].append({sorted_names[i]: artifacts_sorted[i]})
 
         # weapons
         weapon_names = []
@@ -127,35 +158,44 @@ class GPRater:
                 weapon_ratings.append(weapon_rating)
                 weapon_names.append(weapon_name)
 
-
         weapons_sorted = sorted(weapon_ratings)
 
         zipped_weapons = zip(weapons_sorted, weapon_names)
 
         sorted_names = [element for _, element in sorted(zipped_weapons)]
-        details['per object rating']['weapons'].append()
 
+        for i in range(len(sorted_names)):
+            details['per object rating']['weapons'].append({sorted_names[i]: weapons_sorted[i]})
+
+        details['totals']['characters']['unweighted'] = sum(character_ratings)
+        details['totals']['artifacts']['unweighted'] = sum(artifact_ratings)
+        details['totals']['weapons']['unweighted'] = sum(weapon_ratings)
+
+        section_pl = 0
         for character_rating in character_ratings:
-            power_level += character_rating * (self.character_factor ** (character_ratings.index(character_rating)))
+            rating = character_rating * (GPRater.character_factor ** (character_ratings.index(character_rating)))
+            section_pl += rating
+            power_level += rating
 
-            # factored_character_rating = '{:,}'.format(character_rating * character_factor**(character_ratings.index(character_rating)))
-            # new_character_rating = '{:,}'.format(character_rating)
-            # print(f"character #{character_ratings.index(character_rating) + 1} {factored_character_rating} | {new_character_rating}")
+        details['totals']['characters']['weighted'] = section_pl
 
+        section_pl = 0
         for artifact_rating in artifact_ratings:
-            power_level += artifact_rating * (self.artifact_factor ** (artifact_ratings.index(artifact_rating)))
+            rating = artifact_rating * (GPRater.artifact_factor ** (artifact_ratings.index(artifact_rating)))
+            section_pl += rating
+            power_level += rating
 
-            # factored_artifact_rating = '{:,}'.format(artifact_rating * artifact_factor**(artifact_ratings.index(artifact_rating)))
-            # new_artifact_rating = '{:,}'.format(artifact_rating)
-            # print(f"artifact #{artifact_ratings.index(artifact_rating) + 1} {factored_artifact_rating} | {new_artifact_rating}")
+        details['totals']['artifacts']['weighted'] = section_pl
 
+        section_pl = 0
         for weapon_rating in weapon_ratings:
-            power_level += weapon_rating * (self.weapon_factor ** (weapon_ratings.index(weapon_rating)))
+            rating = weapon_rating * (GPRater.weapon_factor ** (weapon_ratings.index(weapon_rating)))
+            section_pl += rating
+            power_level += rating
 
-            # factored_weapon_rating = '{:,}'.format(weapon_rating * weapon_factor**(weapon_ratings.index(weapon_rating)))
-            # new_weapon_rating = '{:,}'.format(weapon_rating)
-            # print(f"weapon #{weapon_ratings.index(weapon_rating) + 1} {factored_weapon_rating} | {new_weapon_rating}")
+        details['totals']['weapons']['weighted'] = section_pl
 
-        # print(power_level)
-        details['rating'] = power_level
+        details['rating']['unweighted'] = round(sum(character_ratings) + sum(artifact_ratings) + sum(weapon_ratings), 2)
+        details['rating']['weighted'] = round(power_level, 2)
+
         return details
