@@ -1,3 +1,6 @@
+import os
+
+
 class GPSystem:
     def __init__(self):
         self.version = "1.0"
@@ -5,6 +8,7 @@ class GPSystem:
 
 
 
+
 if __name__ == '__main__':
     program = GPSystem()
-    print()
+    os.mkdir("Data")
