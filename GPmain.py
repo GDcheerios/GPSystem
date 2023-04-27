@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
 
         while True:
-            print("")
+            print(f"\n GP version {program.rater.version}\n")
             headers = ["rank", "player", "weighted gp", "unweighted gp"]
 
             table = []
@@ -62,7 +62,8 @@ if __name__ == '__main__':
                 print(f"unweighted gp: {character[1]['rating']['unweighted']}\n")
 
                 option = int(input("1. view section overview\n"
-                                   "2. back\n"))
+                                   "2. view json\n"
+                                   "3. back\n"))
 
                 if option == 1:
                     headers = ["section number", "section type", "weighted gp", "unweighted gp"]
@@ -90,5 +91,7 @@ if __name__ == '__main__':
                         ]
                     ]
                     print(tabulate(table, headers=headers, tablefmt=table_style))
+                elif option == 2:
+                    print(json.dumps(character[1], indent=4))
                 else:
                     break
