@@ -13,16 +13,16 @@ Testing should result in a table like this:
 ```
 |   rank | player     |   weighted gp |   unweighted gp |
 |-------:|:-----------|--------------:|----------------:|
-|      1 | coolPlayer |          46.8 |            46.8 |
+|      1 | GDcheerios |        841.65 |           848.2 |
 ```
 
 Upon selecting a player you'll get the overview of their different sections like so:
 ```
 |   section number | section type   |   weighted gp |   unweighted gp |
 |-----------------:|:---------------|--------------:|----------------:|
-|                1 | characters     |          46.8 |            46.8 |
-|                2 | artifacts      |           0   |             0   |
-|                3 | weapons        |           0   |             0   |
+|                1 | characters     |       797.046 |           803.6 |
+|                2 | artifacts      |        44.6   |            44.6 |
+|                3 | weapons        |         0     |             0   |
 ```
 
 The player power rating details are returned from the GPSystem's rater class.
@@ -32,7 +32,7 @@ here's an example:
 from GPmain import GPSystem
 import json
 
-with open("Data/coolPlayer.json", "r") as f:
+with open("Data/GDcheerios.json", "r") as f:
   player_data = json.loads(f.read())
 
 program = GPSystem()
@@ -44,34 +44,51 @@ result:
 ```json
 {
     "rating":{
-        "unweighted":46.8,
-        "weighted":46.8
+        "unweighted":848.2,
+        "weighted":841.65
     },
     "totals":{
         "characters":{
-            "unweighted":46.8,
-            "weighted":46.8
+            "unweighted":803.6,
+            "weighted":797.0464374999999
         },
         "weapons":{
             "unweighted":0,
             "weighted":0
         },
         "artifacts":{
-            "unweighted":0,
-            "weighted":0
+            "unweighted":44.6,
+            "weighted":44.6
         }
     },
     "per object rating":{
         "characters":[
             {
-                "cool character":46.8
+                "Brayden Messerschmidt":14.5
+            },
+            {
+                "Kelly Krysa":21.5
+            },
+            {
+                "Gavin Knudsen":28.5
+            },
+            {
+                "Matheu Sliger":739.1
             }
         ],
         "weapons":[
             
         ],
         "artifacts":[
-            
+            {
+                "Budweiser":13.8
+            },
+            {
+                "Pepsi Bottle":13.8
+            },
+            {
+                "Angry Anubis":17.0
+            }
         ]
     }
 }
