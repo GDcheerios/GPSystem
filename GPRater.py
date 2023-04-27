@@ -1,4 +1,5 @@
 class GPRater:
+    version = "1.0"
     character_factor = 0.95
     artifact_factor = 1
     weapon_factor = 1
@@ -115,7 +116,7 @@ class GPRater:
 
         characters_sorted = sorted(character_ratings)
 
-        zipped_characters = zip(characters_sorted, character_names)
+        zipped_characters = zip(character_ratings, character_names)
 
         sorted_names = [element for _, element in sorted(zipped_characters)]
 
@@ -137,7 +138,7 @@ class GPRater:
 
         artifacts_sorted = sorted(artifact_ratings)
 
-        zipped_artifacts = zip(artifacts_sorted, artifact_names)
+        zipped_artifacts = zip(artifact_ratings, artifact_names)
 
         sorted_names = [element for _, element in sorted(zipped_artifacts)]
 
@@ -160,7 +161,7 @@ class GPRater:
 
         weapons_sorted = sorted(weapon_ratings)
 
-        zipped_weapons = zip(weapons_sorted, weapon_names)
+        zipped_weapons = zip(weapon_ratings, weapon_names)
 
         sorted_names = [element for _, element in sorted(zipped_weapons)]
 
@@ -172,7 +173,7 @@ class GPRater:
         details['totals']['weapons']['unweighted'] = sum(weapon_ratings)
 
         section_pl = 0
-        for character_rating in character_ratings:
+        for character_rating in characters_sorted:
             rating = character_rating * (GPRater.character_factor ** (character_ratings.index(character_rating)))
             section_pl += rating
             power_level += rating
@@ -180,7 +181,7 @@ class GPRater:
         details['totals']['characters']['weighted'] = section_pl
 
         section_pl = 0
-        for artifact_rating in artifact_ratings:
+        for artifact_rating in artifacts_sorted:
             rating = artifact_rating * (GPRater.artifact_factor ** (artifact_ratings.index(artifact_rating)))
             section_pl += rating
             power_level += rating
@@ -188,7 +189,7 @@ class GPRater:
         details['totals']['artifacts']['weighted'] = section_pl
 
         section_pl = 0
-        for weapon_rating in weapon_ratings:
+        for weapon_rating in weapons_sorted:
             rating = weapon_rating * (GPRater.weapon_factor ** (weapon_ratings.index(weapon_rating)))
             section_pl += rating
             power_level += rating
