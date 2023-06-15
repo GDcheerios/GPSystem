@@ -13,22 +13,23 @@ if __name__ == '__main__':
     import json
     from tabulate import tabulate
     table_style = "pipe"
+    file_path = "GPSystem/Data"
     program = GPSystem()
-    if os.path.isdir('Data'):
+    if os.path.isdir(file_path):
         pass
     else:
-        os.mkdir("Data")
+        os.mkdir(file_path)
 
-    if len(os.listdir("Data")) == 0:
+    if len(os.listdir(file_path)) == 0:
         print("you have no users in the data directory...")
     else:
         characters = []
         print("rating characters...")
-        for file in os.listdir("Data"):
+        for file in os.listdir(file_path):
             character_name = file[:-5]
             print(f"rating {character_name}")
 
-            with open(f"Data/{file}", "r") as f:
+            with open(f"{file_path}/{file}", "r") as f:
                 character_data = json.loads(f.read())
 
             characters.append([character_name, program.rater.generate_power_details(character_data)])
