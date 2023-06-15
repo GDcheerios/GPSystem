@@ -1,5 +1,4 @@
 class GPRater:
-    version = "1.0"
     character_factor = 0.95
     artifact_factor = 1
     weapon_factor = 1
