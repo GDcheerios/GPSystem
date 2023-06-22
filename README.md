@@ -4,6 +4,8 @@ The Gentry's Quest Rating system
 ## Installation
 unzip source into project.
 
+or use `pip install git+https://github.com/GDcheeriosYT/GPSystem.git`
+
 If you're testing you'll need the [tabulate](https://pypi.org/project/tabulate/) module
 
 ## Usage
