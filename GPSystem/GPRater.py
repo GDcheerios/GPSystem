@@ -35,19 +35,19 @@ class GPRater:
             if isinstance(attribute, dict):
                 attribute = attribute["buff"]
             rating = 0
-            if attribute[0] == 1:
+            if attribute[0] == 1:  # health
                 rating += attribute[2] * 1.5
 
-            elif attribute[0] == 2:
+            elif attribute[0] == 2:  # attack
                 rating += attribute[2] * 2.5
 
-            elif attribute[0] == 3:
+            elif attribute[0] == 3:  # defense
                 rating += attribute[2] * 1
 
-            elif attribute[0] == 4:
+            elif attribute[0] == 4:  # crit rate
                 rating += attribute[2] * 3
 
-            elif attribute[0] == 5:
+            elif attribute[0] == 5:  # crit damage
                 rating += attribute[2] * 2
 
             return rating
