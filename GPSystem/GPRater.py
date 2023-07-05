@@ -167,9 +167,9 @@ class GPRater:
         for i in range(len(sorted_names)):
             details['per object rating']['weapons'].append({sorted_names[i]: weapons_sorted[i]})
 
-        details['totals']['characters']['unweighted'] = sum(character_ratings)
-        details['totals']['artifacts']['unweighted'] = sum(artifact_ratings)
-        details['totals']['weapons']['unweighted'] = sum(weapon_ratings)
+        details['totals']['characters']['unweighted'] = (int(sum(character_ratings)) if integer_values else round(sum(character_ratings), 2))
+        details['totals']['artifacts']['unweighted'] = (int(sum(artifact_ratings)) if integer_values else round(sum(artifact_ratings), 2))
+        details['totals']['weapons']['unweighted'] = (int(sum(weapon_ratings)) if integer_values else round(sum(weapon_ratings), 2))
 
         section_pl = 0
         for character_rating in characters_sorted:
