@@ -3,7 +3,7 @@ from GPRater import GPRater
 
 class GPSystem:
     rater = GPRater()
-    version = "1.0"
+    version = "1.1"
     def __init__(self):
         print("You're using GPSystem version ", GPSystem.version)
 

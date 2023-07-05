@@ -5,7 +5,7 @@ class GPRater:
     weapon_factor = 1
 
     @staticmethod
-    def generate_power_details(json_data) -> dict:
+    def generate_power_details(json_data, integer_values: bool = False) -> dict:
         details = {
             'rating': {
                 'unweighted': 0,
@@ -178,7 +178,7 @@ class GPRater:
             section_pl += rating
             power_level += rating
 
-        details['totals']['characters']['weighted'] = section_pl
+        details['totals']['characters']['weighted'] = int(section_pl) if integer_values else round(section_pl, 2)
 
         section_pl = 0
         for artifact_rating in artifacts_sorted:
@@ -186,7 +186,7 @@ class GPRater:
             section_pl += rating
             power_level += rating
 
-        details['totals']['artifacts']['weighted'] = section_pl
+        details['totals']['artifacts']['weighted'] = int(section_pl) if integer_values else round(section_pl, 2)
 
         section_pl = 0
         for weapon_rating in weapons_sorted:
@@ -194,9 +194,16 @@ class GPRater:
             section_pl += rating
             power_level += rating
 
-        details['totals']['weapons']['weighted'] = section_pl
+        details['totals']['weapons']['weighted'] = int(section_pl) if integer_values else round(section_pl, 2)
 
-        details['rating']['unweighted'] = round(sum(character_ratings) + sum(artifact_ratings) + sum(weapon_ratings), 2)
-        details['rating']['weighted'] = round(power_level, 2)
+        if integer_values:
+            unweighted = int(sum(character_ratings) + sum(artifact_ratings) + sum(weapon_ratings))
+            weighted = int(power_level)
+        else:
+            unweighted = round(sum(character_ratings) + sum(artifact_ratings) + sum(weapon_ratings), 2)
+            weighted = round(power_level, 2)
+
+        details['rating']['unweighted'] = unweighted
+        details['rating']['weighted'] = weighted
 
         return details
