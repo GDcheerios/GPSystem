@@ -2,11 +2,4 @@
 /shelf/
 /workspace.xml
 *.json
-/.idea/discord.xml
-/.idea/GPSystem.iml
-/.idea/misc.xml
-/.idea/modules.xml
-/.idea/inspectionProfiles/profiles_settings.xml
-/.idea/inspectionProfiles/Project_Default.xml
-/.idea/vcs.xml
-/.idea/workspace.xml
+/.idea/
