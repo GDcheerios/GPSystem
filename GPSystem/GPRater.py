@@ -189,7 +189,7 @@ class GPRater:
         details['totals']['weapons']['unweighted'] = (int(sum(weapon_ratings)) if integer_values else round(sum(weapon_ratings), 2))
 
         section_pl = 0
-        print(characters_sorted)
+        # print(characters_sorted)
         for character_rating in characters_sorted:
             rating = character_rating * (GPRater.character_factor ** (characters_sorted.index(character_rating)))
             section_pl += rating
@@ -197,7 +197,7 @@ class GPRater:
 
         details['totals']['characters']['weighted'] = int(section_pl) if integer_values else round(section_pl, 2)
 
-        print(artifacts_sorted)
+        # print(artifacts_sorted)
         section_pl = 0
         for artifact_rating in artifacts_sorted:
             rating = artifact_rating * (GPRater.artifact_factor ** (artifacts_sorted.index(artifact_rating)))
@@ -206,7 +206,7 @@ class GPRater:
 
         details['totals']['artifacts']['weighted'] = int(section_pl) if integer_values else round(section_pl, 2)
 
-        print(weapons_sorted)
+        # print(weapons_sorted)
         section_pl = 0
         for weapon_rating in weapons_sorted:
             rating = weapon_rating * (GPRater.weapon_factor ** (weapons_sorted.index(weapon_rating)))
