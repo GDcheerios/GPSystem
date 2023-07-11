@@ -1,9 +1,12 @@
-from .GPRater import GPRater
+try:
+    from .GPRater import GPRater
+except ImportError:
+    from GPRater import GPRater
 
 
 class GPSystem:
     rater = GPRater()
-    version = "1.1.2"
+    version = "1.2"
 
     def __init__(self):
         print("You're using GPSystem version ", GPSystem.version)
@@ -11,6 +14,7 @@ class GPSystem:
 
 if __name__ == '__main__':
     import os
+    import pyperclip
     import json
     from tabulate import tabulate
     table_style = "pipe"
@@ -40,7 +44,7 @@ if __name__ == '__main__':
 
 
         while True:
-            print(f"\n GP version {program.rater.version}\n")
+            print(f"\n GP version {program.version}\n")
             headers = ["rank", "player", "weighted gp", "unweighted gp"]
 
             table = []
@@ -57,6 +61,7 @@ if __name__ == '__main__':
             option = int(input("\nview info about player (select rank)\n"))
 
             character = characters[option - 1]
+            pyperclip.copy(json.dumps(character[1], indent=4))
             while True:
                 print("")
                 print(character[0])

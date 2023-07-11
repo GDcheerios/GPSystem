@@ -1,7 +1,22 @@
 class GPRater:
+    # overall factors
     character_factor = 0.95
     artifact_factor = 1
     weapon_factor = 1
+
+    # character factors
+    character_star_rating_factor = 4
+    character_level_factor = 2
+    character_difficulty_factor = 10
+
+    # artifact factors
+    artifact_star_rating_factor = 1.2
+    artifact_level_factor = 1
+
+    # weapon factors
+    weapon_star_rating_factor = 1.5
+    weapon_level_factor = 1
+    weapon_attack_factor = 0.1
 
     @staticmethod
     def generate_power_details(json_data, integer_values: bool = False) -> dict:
@@ -42,13 +57,13 @@ class GPRater:
                 rating += attribute[2] * 2.5
 
             elif attribute[0] == 3:  # defense
-                rating += attribute[2] * 1
+                rating += attribute[2] * 2
 
             elif attribute[0] == 4:  # crit rate
-                rating += attribute[2] * 3
+                rating += attribute[2] * 4
 
             elif attribute[0] == 5:  # crit damage
-                rating += attribute[2] * 2
+                rating += attribute[2] * 3
 
             return rating
 
@@ -60,47 +75,46 @@ class GPRater:
         for character in json_data["inventory"]["characters"]:
             character_rating = 0
             character_name = character["name"]
-            difficulty = character["experience"]["level"] / 20
-            character_rating += character["star rating"]
-            character_rating += character["experience"]["level"] * 2
-            character_rating += (difficulty + 1) * 10
+            difficulty = (character["experience"]["level"] / 20) + 1
+            character_rating += character["star rating"] * GPRater.character_star_rating_factor
+            character_rating += character["experience"]["level"] * GPRater.character_level_factor
+            character_rating += difficulty * GPRater.character_difficulty_factor
             equips = character["equips"]
             family_names = []
             for artifact in equips["artifacts"]:
                 family_names.append(artifact["family"])
-                character_rating += artifact["star rating"] * 1.20
-                character_rating += artifact["experience"]["level"]
-                character_rating += ((artifact["experience"]["level"] / 4) * 2) + 1
+                character_rating += artifact["star rating"] * GPRater.artifact_star_rating_factor
+                character_rating += artifact["experience"]["level"] * GPRater.artifact_level_factor
                 character_rating += attribute_rater(artifact["stats"]["main attribute"])
                 for attribute in artifact["stats"]["attributes"]:
                     character_rating += attribute_rater(attribute)
 
-            unique_family_names = []
-            for name in family_names:
-                if name not in unique_family_names:
-                    unique_family_names.append(name)
-
-            name_occurences = {}
-
-            for unique_name in unique_family_names:
-                count = 0
-                for name in family_names:
-                    if unique_name == name:
-                        count += 1
-
-                name_occurences[unique_name] = count
-
-            for name in name_occurences:
-                if name_occurences[name] >= 3:
-                    character_rating += 10
-
-                if name_occurences[name] == 5:
-                    character_rating += 5
+            # unique_family_names = []
+            # for name in family_names:
+            #     if name not in unique_family_names:
+            #         unique_family_names.append(name)
+            #
+            # name_occurences = {}
+            #
+            # for unique_name in unique_family_names:
+            #     count = 0
+            #     for name in family_names:
+            #         if unique_name == name:
+            #             count += 1
+            #
+            #     name_occurences[unique_name] = count
+            #
+            # for name in name_occurences:
+            #     if name_occurences[name] >= 3:
+            #         character_rating += 10
+            #
+            #     if name_occurences[name] == 5:
+            #         character_rating += 5
 
             try:
-                character_rating += equips["weapon"]["star rating"] * 1.5
-                character_rating += equips["weapon"]["experience"]["level"]
-                character_rating += equips["weapon"]["stats"]["attack"] / 10
+                character_rating += equips["weapon"]["star rating"] * GPRater.character_star_rating_factor
+                character_rating += equips["weapon"]["experience"]["level"] * GPRater.weapon_level_factor
+                character_rating += equips["weapon"]["stats"]["attack"] * GPRater.weapon_attack_factor
                 character_rating += attribute_rater(equips["weapon"]["stats"]["buff"])
 
             except KeyError:
@@ -128,8 +142,11 @@ class GPRater:
         for artifact in json_data["inventory"]["artifacts"]:
             artifact_rating = 0
             artifact_name = artifact['name']
-            artifact_rating += artifact["star rating"] * 1.20
-            artifact_rating += ((artifact["experience"]["level"] / 4) * 2) + 1
+            artifact_rating += artifact["star rating"] * GPRater.artifact_star_rating_factor
+            artifact_rating += artifact["experience"]["level"] * GPRater.artifact_level_factor
+            artifact_rating += attribute_rater(artifact["stats"]["main attribute"])
+            for buff in artifact["stats"]["attributes"]:
+                artifact_rating += attribute_rater(buff)
 
             if artifact["experience"]["xp"] > 0 or artifact["experience"]["level"] > 1:
                 artifact_ratings.append(artifact_rating)
@@ -150,9 +167,9 @@ class GPRater:
         for weapon in json_data["inventory"]["weapons"]:
             weapon_rating = 0
             weapon_name = weapon["name"]
-            weapon_rating += weapon["star rating"] * 1.50
-            weapon_rating += weapon["experience"]["level"] * 1.26
-            weapon_rating += weapon["stats"]["attack"] / 2
+            weapon_rating += weapon["star rating"] * GPRater.weapon_star_rating_factor
+            weapon_rating += weapon["experience"]["level"] * GPRater.weapon_level_factor
+            weapon_rating += weapon["stats"]["attack"] * GPRater.weapon_attack_factor
 
             if weapon["experience"]["xp"] > 0 or weapon["experience"]["level"] > 1:
                 weapon_ratings.append(weapon_rating)
@@ -172,24 +189,27 @@ class GPRater:
         details['totals']['weapons']['unweighted'] = (int(sum(weapon_ratings)) if integer_values else round(sum(weapon_ratings), 2))
 
         section_pl = 0
+        print(characters_sorted)
         for character_rating in characters_sorted:
-            rating = character_rating * (GPRater.character_factor ** (character_ratings.index(character_rating)))
+            rating = character_rating * (GPRater.character_factor ** (characters_sorted.index(character_rating)))
             section_pl += rating
             power_level += rating
 
         details['totals']['characters']['weighted'] = int(section_pl) if integer_values else round(section_pl, 2)
 
+        print(artifacts_sorted)
         section_pl = 0
         for artifact_rating in artifacts_sorted:
-            rating = artifact_rating * (GPRater.artifact_factor ** (artifact_ratings.index(artifact_rating)))
+            rating = artifact_rating * (GPRater.artifact_factor ** (artifacts_sorted.index(artifact_rating)))
             section_pl += rating
             power_level += rating
 
         details['totals']['artifacts']['weighted'] = int(section_pl) if integer_values else round(section_pl, 2)
 
+        print(weapons_sorted)
         section_pl = 0
         for weapon_rating in weapons_sorted:
-            rating = weapon_rating * (GPRater.weapon_factor ** (weapon_ratings.index(weapon_rating)))
+            rating = weapon_rating * (GPRater.weapon_factor ** (weapons_sorted.index(weapon_rating)))
             section_pl += rating
             power_level += rating
 
