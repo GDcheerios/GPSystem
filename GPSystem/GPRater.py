@@ -181,10 +181,11 @@ class GPRater:
                         character_rating += attribute_rater(attribute)
 
             try:
-                character_rating += equips["weapon"]["star rating"] * GPRater.character_star_rating_factor
-                character_rating += equips["weapon"]["experience"]["level"] * GPRater.weapon_level_factor
-                character_rating += equips["weapon"]["stats"]["attack"] * GPRater.weapon_attack_factor
-                character_rating += attribute_rater(equips["weapon"]["stats"]["buff"])
+                if equips['weapon']:
+                    character_rating += equips["weapon"]["star rating"] * GPRater.character_star_rating_factor
+                    character_rating += equips["weapon"]["experience"]["level"] * GPRater.weapon_level_factor
+                    character_rating += equips["weapon"]["stats"]["attack"] * GPRater.weapon_attack_factor
+                    character_rating += attribute_rater(equips["weapon"]["stats"]["buff"])
 
             except KeyError:
                 pass
@@ -238,7 +239,10 @@ class GPRater:
             weapon_name = weapon["name"]
             weapon_rating += weapon["star rating"] * GPRater.weapon_star_rating_factor
             weapon_rating += weapon["experience"]["level"] * GPRater.weapon_level_factor
-            weapon_rating += weapon["stats"]["attack"] * GPRater.weapon_attack_factor
+            try:
+                weapon_rating += weapon["stats"]["attack"] * GPRater.weapon_attack_factor
+            except KeyError:  # gentry's quest classic only uses this
+                pass
 
             if weapon["experience"]["xp"] > 0 or weapon["experience"]["level"] > 1:
                 weapon_ratings.append(weapon_rating)
