@@ -6,7 +6,7 @@ except ImportError:
 
 class GPSystem:
     rater = GPRater()
-    version = "1.2"
+    version = "1.3"
 
     def __init__(self):
         print("You're using GPSystem version ", GPSystem.version)
@@ -17,6 +17,7 @@ if __name__ == '__main__':
     import pyperclip
     import json
     from tabulate import tabulate
+
     table_style = "pipe"
     file_path = "GPSystem/Data"
     program = GPSystem()
@@ -24,6 +25,8 @@ if __name__ == '__main__':
         pass
     else:
         os.mkdir(file_path)
+
+    print(json.dumps(program.rater.get_tiers(), indent=4))
 
     if len(os.listdir(file_path)) == 0:
         print("you have no users in the data directory...")
@@ -39,13 +42,15 @@ if __name__ == '__main__':
 
             characters.append([character_name, program.rater.generate_power_details(character_data)])
 
+
         def table_data_maker(character_data: list, rank: int) -> list:
-            return [rank, character_data[0], character_data[1]["rating"]["weighted"], character[1]["rating"]["unweighted"]]
+            return [rank, character_data[0], f"{character_data[1]['ranking']['tier']} {character_data[1]['ranking']['tier value']}", character_data[1]["rating"]["weighted"],
+                    character[1]["rating"]["unweighted"]]
 
 
         while True:
             print(f"\n GP version {program.version}\n")
-            headers = ["rank", "player", "weighted gp", "unweighted gp"]
+            headers = ["placement", "player", "ranking", "weighted gp", "unweighted gp"]
 
             table = []
 
@@ -54,7 +59,6 @@ if __name__ == '__main__':
             for character in characters:
                 table.append(table_data_maker(character, rank_counter))
                 rank_counter += 1
-
 
             print(tabulate(table, headers=headers, tablefmt=table_style))
 
