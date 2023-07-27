@@ -6,7 +6,7 @@ except ImportError:
 
 class GPSystem:
     rater = GPRater()
-    version = "1.3.1"
+    version = "1.4"
 
     def __init__(self):
         print("You're using GPSystem version ", GPSystem.version)
@@ -45,12 +45,12 @@ if __name__ == '__main__':
 
         def table_data_maker(character_data: list, rank: int) -> list:
             return [rank, character_data[0], f"{character_data[1]['ranking']['tier']} {character_data[1]['ranking']['tier value']}", character_data[1]["rating"]["weighted"],
-                    character[1]["rating"]["unweighted"]]
+                    character[1]["rating"]["unweighted"], character[1]['version']]
 
 
         while True:
             print(f"\n GP version {program.version}\n")
-            headers = ["placement", "player", "ranking", "weighted gp", "unweighted gp"]
+            headers = ["placement", "player", "ranking", "weighted gp", "unweighted gp", "version"]
 
             table = []
 
