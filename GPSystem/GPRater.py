@@ -3,7 +3,7 @@ import json
 
 class GPRater:
     # ranking
-    gp_peak = 5000
+    gp_peak = 3000
 
     @staticmethod
     def get_tiers() -> dict:
