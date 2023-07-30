@@ -1,4 +1,4 @@
-# GPSystem Version 1.4
+# GPSystem Version 1.5
 The Gentry's Quest Rating system
 
 ## Installation
