@@ -96,8 +96,8 @@ class GPRater:
                 'weighted': 0
             },
             'ranking': {
-                'tier': 'unranked',
-                'tier value': ''
+                'rank': 'unranked',
+                'tier': ''
             },
             'totals': {
                 'characters': {
