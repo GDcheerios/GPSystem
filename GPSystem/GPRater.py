@@ -387,7 +387,7 @@ class GPRater:
             if rank[0] != 'unranked':
                 break
 
-        details['ranking']['tier'] = rank[0]
-        details['ranking']['tier value'] = rank[1]
+        details['ranking']['rank'] = rank[0]
+        details['ranking']['tier'] = rank[1]
 
         return details
