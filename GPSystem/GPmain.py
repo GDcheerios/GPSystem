@@ -44,7 +44,7 @@ if __name__ == '__main__':
 
 
         def table_data_maker(character_data: list, rank: int) -> list:
-            return [rank, character_data[0], f"{character_data[1]['ranking']['tier']} {character_data[1]['ranking']['tier value']}", character_data[1]["rating"]["weighted"],
+            return [rank, character_data[0], f"{character_data[1]['ranking']['rank']} {character_data[1]['ranking']['tier']}", character_data[1]["rating"]["weighted"],
                     character[1]["rating"]["unweighted"], character[1]['version']]
 
 
