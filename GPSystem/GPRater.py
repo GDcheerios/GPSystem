@@ -9,46 +9,46 @@ class GPRater:
     def get_tiers() -> dict:
         highest_gp = GPRater.gp_peak
         copper = {
-            '5': round(highest_gp * 0.06),
-            '4': round(highest_gp * 0.07),
+            '1': round(highest_gp * 0.06),
+            '2': round(highest_gp * 0.07),
             '3': round(highest_gp * 0.08),
-            '2': round(highest_gp * 0.09),
-            '1': round(highest_gp * 0.1),
+            '4': round(highest_gp * 0.09),
+            '5': round(highest_gp * 0.1),
         }
 
         bronze = {
-            '5': round(highest_gp * 0.12),
-            '4': round(highest_gp * 0.14),
+            '1': round(highest_gp * 0.12),
+            '2': round(highest_gp * 0.14),
             '3': round(highest_gp * 0.16),
-            '2': round(highest_gp * 0.18),
-            '1': round(highest_gp * 0.2),
+            '4': round(highest_gp * 0.18),
+            '5': round(highest_gp * 0.2),
         }
 
         silver = {
-            '5': round(highest_gp * 0.22),
-            '4': round(highest_gp * 0.24),
+            '1': round(highest_gp * 0.22),
+            '2': round(highest_gp * 0.24),
             '3': round(highest_gp * 0.26),
-            '2': round(highest_gp * 0.28),
-            '1': round(highest_gp * 0.3),
+            '4': round(highest_gp * 0.28),
+            '5': round(highest_gp * 0.3),
         }
 
         gold = {
-            '5': round(highest_gp * 0.35),
-            '4': round(highest_gp * 0.4),
+            '1': round(highest_gp * 0.35),
+            '2': round(highest_gp * 0.4),
             '3': round(highest_gp * 0.45),
-            '2': round(highest_gp * 0.5),
-            '1': round(highest_gp * 0.55),
+            '4': round(highest_gp * 0.5),
+            '5': round(highest_gp * 0.55),
         }
 
         platinum = {
-            '3': round(highest_gp * 0.6),
+            '1': round(highest_gp * 0.6),
             '2': round(highest_gp * 0.7),
-            '1': round(highest_gp * 0.8),
+            '3': round(highest_gp * 0.8),
         }
 
         diamond = {
-            '2': round(highest_gp * 0.9),
-            '1': round(highest_gp * 0.95)
+            '1': round(highest_gp * 0.9),
+            '2': round(highest_gp * 0.95)
         }
 
         gentry_warrior = {
