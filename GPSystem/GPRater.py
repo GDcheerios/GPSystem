@@ -166,7 +166,10 @@ class GPRater:
 
         power_level = 0
 
-        def rate_artifact(artifact):
+        def check_xp(object):
+            return object["experience"]["xp"] > 0 or object["experience"]["level"] > 1
+
+        def rate_artifact(artifact, is_equipped = False):
             if artifact:
                 artifact_details = {
                     "rating": 0,
@@ -190,7 +193,7 @@ class GPRater:
                 artifact_rating += main_attribute
                 artifact_rating += sum(attributes)
 
-                artifact_details["rating"] = artifact_rating
+                artifact_details["rating"] = artifact_rating if (check_xp(artifact) or is_equipped) else 0
                 artifact_details["star_rating"] = star_rating
                 artifact_details["level"] = level
                 artifact_details["main attribute"] = main_attribute
@@ -198,7 +201,7 @@ class GPRater:
 
                 return artifact_details
 
-        def rate_weapon(weapon):
+        def rate_weapon(weapon, is_equipped = False):
             weapon_details = {
                 "rating": 0,
                 "name": weapon["name"],
@@ -224,7 +227,7 @@ class GPRater:
             weapon_rating += level
             weapon_rating += attack
 
-            weapon_details["rating"] = weapon_rating
+            weapon_details["rating"] = weapon_rating if (check_xp(weapon) or is_equipped) else 0
 
             return weapon_details
 
@@ -250,7 +253,7 @@ class GPRater:
             artifact_rating = 0
             for artifact in equips["artifacts"]:
                 if artifact:
-                    rating_details = rate_artifact(artifact)
+                    rating_details = rate_artifact(artifact, True)
                     artifact_rating += rating_details["rating"]
                     artifacts.append(rating_details)
 
@@ -258,7 +261,7 @@ class GPRater:
 
             try:
                 if equips['weapon']:
-                    rating_details = rate_weapon(equips["weapon"])
+                    rating_details = rate_weapon(equips["weapon"], True)
                     weapon_rating = rating_details["rating"]
                     character_details['weapon'] = rating_details
 
@@ -274,7 +277,7 @@ class GPRater:
             character_rating += weapon_rating
             character_rating += artifact_rating
 
-            character_details["rating"] = character_rating
+            character_details["rating"] = character_rating if check_xp(character) else 0
             character_details["star_rating"] = character["star rating"] * GPRater.character_star_rating_factor
             character_details["level"] = character["experience"]["level"] * GPRater.character_level_factor
             character_details["difficulty"] = difficulty * GPRater.character_difficulty_factor
