@@ -68,9 +68,9 @@ class GPRater:
     # section factors
     character_factor = 0.95
     character_rating_enabled = True
-    artifact_factor = 0.15
+    artifact_factor = 0.5
     artifact_rating_enabled = True
-    weapon_factor = 0.05
+    weapon_factor = 0.85
     weapon_rating_enabled = True
 
     # character factors
