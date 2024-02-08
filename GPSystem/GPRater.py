@@ -5,9 +5,30 @@ class GPRater:
     # ranking
     gp_peak = 3000
 
+    rating_colors = {
+        "unranked": "#082b3b",
+        "copper": "red",
+        "bronze": "brown",
+        "silver": "gray",
+        "gold": "gold",
+        "platinum": "blue",
+        "diamond": "cyan",
+        "gentry warrior": "lime",
+    }
+
     @staticmethod
     def get_tiers() -> dict:
         highest_gp = GPRater.gp_peak
+
+        unranked = {
+            '1': round(highest_gp * 0),
+            '2': round(highest_gp * 0.01),
+            '3': round(highest_gp * 0.02),
+            '4': round(highest_gp * 0.03),
+            '5': round(highest_gp * 0.04),
+            '6': round(highest_gp * 0.05)
+        }
+
         copper = {
             '1': round(highest_gp * 0.06),
             '2': round(highest_gp * 0.07),
@@ -56,6 +77,7 @@ class GPRater:
         }
 
         return {
+            'unranked': unranked,
             'copper': copper,
             'bronze': bronze,
             'silver': silver,
@@ -286,17 +308,17 @@ class GPRater:
 
         # characters
         character_ratings = [rate_character(character) for character in json_data["inventory"]["characters"]]
-        character_ratings.sort(key=lambda x: x["rating"])
+        character_ratings.sort(key=lambda x: x["rating"], reverse=True)
         details['per object rating']['characters'] = character_ratings
 
         # artifacts
         artifact_ratings = [rate_artifact(artifact) for artifact in json_data["inventory"]["artifacts"]]
-        artifact_ratings.sort(key=lambda x: x["rating"])
+        artifact_ratings.sort(key=lambda x: x["rating"], reverse=True)
         details['per object rating']['artifacts'] = artifact_ratings
 
         # weapons
         weapon_ratings = [rate_weapon(weapon) for weapon in json_data["inventory"]["weapons"]]
-        weapon_ratings.sort(key=lambda x: x["rating"])
+        weapon_ratings.sort(key=lambda x: x["rating"], reverse=True)
         details['per object rating']['weapons'] = weapon_ratings
 
         def get_rating(rating_details):
