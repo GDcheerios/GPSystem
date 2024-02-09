@@ -146,10 +146,10 @@ class GPRater:
             rating = 0
 
             health = 1.5
-            attack = 2.5
-            defense = 2
-            crit_rate = 4
-            crit_damage = 3
+            attack = 4
+            defense = 1.2
+            crit_rate = 5
+            crit_damage = 4.5
 
             try:
                 if isinstance(attribute, dict):
