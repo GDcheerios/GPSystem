@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='GPSystem',
-    version='1.7',
+    version='1.8',
     packages=['GPSystem'],
     url='https://github.com/GDcheeriosYT/GPSystem',
     license='UNKOWN',
