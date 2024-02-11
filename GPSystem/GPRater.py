@@ -22,7 +22,7 @@ class GPRater:
         highest_gp = GPRater.gp_peak
 
         unranked = {
-            '': round(highest_gp * 0)
+            '1': round(highest_gp * 0)
         }
 
         copper = {
