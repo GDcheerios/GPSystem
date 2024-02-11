@@ -22,54 +22,52 @@ class GPRater:
         highest_gp = GPRater.gp_peak
 
         unranked = {
-            '1': round(highest_gp * 0),
-            '2': round(highest_gp * 0.01),
-            '3': round(highest_gp * 0.02),
-            '4': round(highest_gp * 0.03),
-            '5': round(highest_gp * 0.04),
-            '6': round(highest_gp * 0.05)
+            '': round(highest_gp * 0)
         }
 
         copper = {
-            '1': round(highest_gp * 0.06),
-            '2': round(highest_gp * 0.07),
-            '3': round(highest_gp * 0.08),
-            '4': round(highest_gp * 0.09),
-            '5': round(highest_gp * 0.1),
+            '1': round(highest_gp * 0.03),
+            '2': round(highest_gp * 0.0325),
+            '3': round(highest_gp * 0.035),
+            '4': round(highest_gp * 0.0375),
+            '5': round(highest_gp * 0.04),
         }
 
         bronze = {
-            '1': round(highest_gp * 0.11),
-            '2': round(highest_gp * 0.12),
-            '3': round(highest_gp * 0.13),
-            '4': round(highest_gp * 0.14),
-            '5': round(highest_gp * 0.15),
+            '1': round(highest_gp * 0.05),
+            '2': round(highest_gp * 0.06),
+            '3': round(highest_gp * 0.07),
+            '4': round(highest_gp * 0.08),
+            '5': round(highest_gp * 0.09),
         }
 
         silver = {
-            '1': round(highest_gp * 0.2),
-            '2': round(highest_gp * 0.22),
-            '3': round(highest_gp * 0.24),
-            '4': round(highest_gp * 0.26),
-            '5': round(highest_gp * 0.28),
+            '1': round(highest_gp * 0.1),
+            '2': round(highest_gp * 0.115),
+            '3': round(highest_gp * 0.130),
+            '4': round(highest_gp * 0.145),
+            '5': round(highest_gp * 0.16),
         }
 
         gold = {
-            '1': round(highest_gp * 0.3),
-            '2': round(highest_gp * 0.33),
-            '3': round(highest_gp * 0.36),
-            '4': round(highest_gp * 0.39),
+            '1': round(highest_gp * 0.18),
+            '2': round(highest_gp * 0.2),
+            '3': round(highest_gp * 0.22),
+            '4': round(highest_gp * 0.24),
+            '5': round(highest_gp * 0.26)
         }
 
         platinum = {
-            '1': round(highest_gp * 0.45),
-            '2': round(highest_gp * 0.5),
-            '3': round(highest_gp * 0.55),
+            '1': round(highest_gp * 0.3),
+            '2': round(highest_gp * 0.34),
+            '3': round(highest_gp * 0.38),
+            '4': round(highest_gp * 0.42)
         }
 
         diamond = {
-            '1': round(highest_gp * 0.6),
-            '2': round(highest_gp * 0.7)
+            '1': round(highest_gp * 0.5),
+            '2': round(highest_gp * 0.58),
+            '3': round(highest_gp * 0.64)
         }
 
         champion = {
