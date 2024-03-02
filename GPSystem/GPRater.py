@@ -75,7 +75,7 @@ class GPRater:
         }
 
         gentry_warrior = {
-            'gentry warrior': highest_gp
+            '1': highest_gp
         }
 
         return {
@@ -399,7 +399,7 @@ class GPRater:
             if not 0 < num < 4000:
                 raise ValueError("Input must be an integer between 1 and 3999.")
 
-            roman_numerals = {5: 'V', 4: 'IV', 1: 'I'}
+            roman_numerals = {10: 'X', 5: 'V', 4: 'IV', 1: 'I'}
 
             roman_str = ""
             for value, numeral in roman_numerals.items():
@@ -414,8 +414,10 @@ class GPRater:
         for tier_name, tier_values in reversed(GPRater.get_tiers().items()):
             for tier_value, gp_value in reversed(tier_values.items()):
                 if weighted >= gp_value:
-                    if tier_value == tier_name:
-                        rank = tier_name, ""
+                    if tier_name == "gentry warrior":
+                        print(weighted, tier_value)
+                        print(int((weighted/int(tier_value)) + 1))
+                        rank = tier_name, int_to_roman(int((weighted/int(gp_value)) + 1))
                     else:
                         rank = tier_name, int_to_roman(int(tier_value))
                     break
