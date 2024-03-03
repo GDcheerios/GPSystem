@@ -416,7 +416,7 @@ class GPRater:
                 if weighted >= gp_value:
                     if tier_name == "gentry warrior":
                         print(weighted, tier_value)
-                        print(int((weighted/int(tier_value)) + 1))
+                        print(int((weighted/int(tier_value))))
                         rank = tier_name, int_to_roman(int((weighted/int(gp_value)) + 1))
                     else:
                         rank = tier_name, int_to_roman(int(tier_value))
