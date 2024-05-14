@@ -1,3 +1,5 @@
+from GPSystem.PortableRater import PortableRater
+
 try:
     from .GPRater import GPRater
 except ImportError:
@@ -6,10 +8,14 @@ except ImportError:
 
 class GPSystem:
     rater = GPRater()
-    version = "1.10.1"
+    version = "2.0"
 
     def __init__(self):
         print("You're using GPSystem version ", GPSystem.version)
+
+    @staticmethod
+    def retrieve_rater() -> PortableRater:
+        return PortableRater(GPRater())
 
 
 if __name__ == '__main__':

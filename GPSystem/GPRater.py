@@ -1,10 +1,10 @@
-import json
+import Properties
+
+from GPSystem.Ranking import Ranking
+from GPSystem.Rating import Rating
 
 
 class GPRater:
-    # ranking
-    gp_peak = 10000
-
     rating_colors = {
         "unranked": "#082b3b",
         "copper": "red",
@@ -19,7 +19,7 @@ class GPRater:
 
     @staticmethod
     def get_tiers() -> dict:
-        highest_gp = GPRater.gp_peak
+        highest_gp = Properties.peak
 
         unranked = {
             '1': round(highest_gp * 0)
@@ -97,6 +97,7 @@ class GPRater:
     artifact_rating_enabled = True
     weapon_factor = 0.85
     weapon_rating_enabled = True
+    max_item_rating = 100
 
     # character factors
     character_star_rating_factor = 4
@@ -111,6 +112,174 @@ class GPRater:
     weapon_star_rating_factor = 2
     weapon_level_factor = 1.5
     weapon_attack_factor = 0.2
+
+    # stat attributes
+    health = 1.5
+    attack = 4
+    defense = 1.2
+    crit_rate = 5
+    crit_damage = 4.5
+    speed = 2
+    attack_speed = 2
+
+    @staticmethod
+    def attribute_rater(attribute):
+        rating = 0
+
+        try:
+            if isinstance(attribute, dict):
+                attribute = attribute["buff"]
+
+            if attribute[0] == 1:  # health
+                rating += attribute[2] * GPRater.health
+
+            elif attribute[0] == 2:  # attack
+                rating += attribute[2] * GPRater.attack
+
+            elif attribute[0] == 3:  # defense
+                rating += attribute[2] * GPRater.defense
+
+            elif attribute[0] == 4:  # crit rate
+                rating += attribute[2] * GPRater.crit_rate
+
+            elif attribute[0] == 5:  # crit damage
+                rating += attribute[2] * GPRater.crit_damage
+        except KeyError:
+            if attribute['stat'] == 'Health':
+                rating += attribute['level'] * GPRater.health
+            elif attribute['stat'] == 'Attack':
+                rating += attribute['level'] * GPRater.attack
+            elif attribute['stat'] == 'Defense':
+                rating += attribute['level'] * GPRater.defense
+            elif attribute['stat'] == 'CritRate':
+                rating += attribute['level'] * GPRater.crit_rate
+            elif attribute['stat'] == 'CritDamage':
+                rating += attribute['level'] * GPRater.crit_damage
+            else:
+                rating += attribute['level']
+
+        return rating
+
+    @staticmethod
+    def check_xp(item: dict) -> bool:
+        return item["experience"]["xp"] > 0 or item["experience"]["level"] > 1
+
+    @staticmethod
+    def rate_artifact(artifact, is_equipped=False):
+        if artifact:
+            artifact_details = {
+                "rating": 0,
+                "name": artifact["name"],
+                "star_rating": 0,
+                "level": 0,
+                "main attribute": 0,
+                "attributes": 0
+            }
+
+            artifact_rating = 0
+            star_rating = artifact["star rating"] * GPRater.artifact_star_rating_factor
+            level = artifact["experience"]["level"] * GPRater.artifact_level_factor
+            main_attribute = GPRater.attribute_rater(artifact["stats"]["main attribute"])
+            attributes = []
+            for attribute in artifact["stats"]["attributes"]:
+                attributes.append(GPRater.attribute_rater(attribute))
+
+            artifact_rating += star_rating
+            artifact_rating += level
+            artifact_rating += main_attribute
+            artifact_rating += sum(attributes)
+
+            artifact_details["rating"] = artifact_rating if (GPRater.check_xp(artifact) or is_equipped) else 0
+            artifact_details["star_rating"] = star_rating
+            artifact_details["level"] = level
+            artifact_details["main attribute"] = main_attribute
+            artifact_details["attributes"] = sum(attributes)
+
+            return artifact_details
+
+    @staticmethod
+    def rate_weapon(weapon, is_equipped=False):
+        weapon_details = {
+            "rating": 0,
+            "name": weapon["name"],
+            "star_rating": 0,
+            "attack": 0,
+            "level": 0,
+            "buff": 0
+        }
+
+        weapon_rating = 0
+        star_rating = weapon["star rating"] * GPRater.weapon_star_rating_factor
+        level = weapon["experience"]["level"] * GPRater.weapon_level_factor
+        attack = 0
+
+        try:
+            attack = weapon["stats"]["attack"] * GPRater.weapon_attack_factor
+            weapon_details["attack"] = attack
+        except KeyError:  # gentry's quest classic only uses this
+            pass
+
+        weapon_rating += star_rating
+        weapon_rating += level
+        weapon_rating += attack
+
+        weapon_details["rating"] = weapon_rating if (GPRater.check_xp(weapon) or is_equipped) else 0
+
+        return weapon_details
+
+    @staticmethod
+    def rate_character(character):
+        character_details = {
+            "rating": 0,
+            "name": character["name"],
+            "star_rating": 0,
+            "level": 0,
+            "difficulty": 0,
+            "weapon": None,
+            "artifacts": None
+        }
+
+        character_rating = 0
+        difficulty = (character["experience"]["level"] / 20) + 1
+        star_rating = character["star rating"] * GPRater.character_star_rating_factor
+        level = character["experience"]["level"] * GPRater.character_level_factor
+        difficulty = difficulty * GPRater.character_difficulty_factor
+        equips = character["equips"]
+        weapon_rating = 0
+        artifacts = []
+        artifact_rating = 0
+        for artifact in equips["artifacts"]:
+            if artifact:
+                rating_details = GPRater.rate_artifact(artifact, True)
+                artifact_rating += rating_details["rating"]
+                artifacts.append(rating_details)
+
+        character_details["artifacts"] = artifacts
+
+        try:
+            if equips['weapon']:
+                rating_details = GPRater.rate_weapon(equips["weapon"], True)
+                weapon_rating = rating_details["rating"]
+                character_details['weapon'] = rating_details
+
+        except KeyError:
+            pass
+
+        except TypeError:
+            pass
+
+        character_rating += difficulty
+        character_rating += star_rating
+        character_rating += level
+        character_rating += weapon_rating
+        character_rating += artifact_rating
+
+        character_details["rating"] = character_rating if GPRater.check_xp(character) else 0
+        character_details["star_rating"] = character["star rating"] * GPRater.character_star_rating_factor
+        character_details["level"] = character["experience"]["level"] * GPRater.character_level_factor
+        character_details["difficulty"] = difficulty * GPRater.character_difficulty_factor
+
+        return character_details
 
     @staticmethod
     def generate_power_details(json_data, integer_values: bool = False) -> dict:
@@ -145,182 +314,20 @@ class GPRater:
             }
         }
 
-        def attribute_rater(attribute):
-            rating = 0
-
-            health = 1.5
-            attack = 4
-            defense = 1.2
-            crit_rate = 5
-            crit_damage = 4.5
-
-            try:
-                if isinstance(attribute, dict):
-                    attribute = attribute["buff"]
-
-                if attribute[0] == 1:  # health
-                    rating += attribute[2] * health
-
-                elif attribute[0] == 2:  # attack
-                    rating += attribute[2] * attack
-
-                elif attribute[0] == 3:  # defense
-                    rating += attribute[2] * defense
-
-                elif attribute[0] == 4:  # crit rate
-                    rating += attribute[2] * crit_rate
-
-                elif attribute[0] == 5:  # crit damage
-                    rating += attribute[2] * crit_damage
-            except KeyError:
-                details['version'] = "Ursina"
-                if attribute['stat'] == 'Health':
-                    rating += attribute['level'] * health
-                elif attribute['stat'] == 'Attack':
-                    rating += attribute['level'] * attack
-                elif attribute['stat'] == 'Defense':
-                    rating += attribute['level'] * defense
-                elif attribute['stat'] == 'CritRate':
-                    rating += attribute['level'] * crit_rate
-                elif attribute['stat'] == 'CritDamage':
-                    rating += attribute['level'] * crit_damage
-                else:
-                    rating += attribute['level']
-
-            return rating
-
         power_level = 0
 
-        def check_xp(object):
-            return object["experience"]["xp"] > 0 or object["experience"]["level"] > 1
-
-        def rate_artifact(artifact, is_equipped = False):
-            if artifact:
-                artifact_details = {
-                    "rating": 0,
-                    "name": artifact["name"],
-                    "star_rating": 0,
-                    "level": 0,
-                    "main attribute": 0,
-                    "attributes": 0
-                }
-
-                artifact_rating = 0
-                star_rating = artifact["star rating"] * GPRater.artifact_star_rating_factor
-                level = artifact["experience"]["level"] * GPRater.artifact_level_factor
-                main_attribute = attribute_rater(artifact["stats"]["main attribute"])
-                attributes = []
-                for attribute in artifact["stats"]["attributes"]:
-                    attributes.append(attribute_rater(attribute))
-
-                artifact_rating += star_rating
-                artifact_rating += level
-                artifact_rating += main_attribute
-                artifact_rating += sum(attributes)
-
-                artifact_details["rating"] = artifact_rating if (check_xp(artifact) or is_equipped) else 0
-                artifact_details["star_rating"] = star_rating
-                artifact_details["level"] = level
-                artifact_details["main attribute"] = main_attribute
-                artifact_details["attributes"] = sum(attributes)
-
-                return artifact_details
-
-        def rate_weapon(weapon, is_equipped = False):
-            weapon_details = {
-                "rating": 0,
-                "name": weapon["name"],
-                "star_rating": 0,
-                "attack": 0,
-                "level": 0,
-                "buff": 0
-            }
-
-            weapon_rating = 0
-            star_rating = weapon["star rating"] * GPRater.weapon_star_rating_factor
-            level = weapon["experience"]["level"] * GPRater.weapon_level_factor
-            attack = 0
-
-            try:
-                attack = weapon["stats"]["attack"] * GPRater.weapon_attack_factor
-                weapon_details["attack"] = attack
-            except KeyError:  # gentry's quest classic only uses this
-                details['version'] = "Ursina"
-                pass
-
-            weapon_rating += star_rating
-            weapon_rating += level
-            weapon_rating += attack
-
-            weapon_details["rating"] = weapon_rating if (check_xp(weapon) or is_equipped) else 0
-
-            return weapon_details
-
-        def rate_character(character):
-            character_details = {
-                "rating": 0,
-                "name": character["name"],
-                "star_rating": 0,
-                "level": 0,
-                "difficulty": 0,
-                "weapon": None,
-                "artifacts": None
-            }
-
-            character_rating = 0
-            difficulty = (character["experience"]["level"] / 20) + 1
-            star_rating = character["star rating"] * GPRater.character_star_rating_factor
-            level = character["experience"]["level"] * GPRater.character_level_factor
-            difficulty = difficulty * GPRater.character_difficulty_factor
-            equips = character["equips"]
-            weapon_rating = 0
-            artifacts = []
-            artifact_rating = 0
-            for artifact in equips["artifacts"]:
-                if artifact:
-                    rating_details = rate_artifact(artifact, True)
-                    artifact_rating += rating_details["rating"]
-                    artifacts.append(rating_details)
-
-            character_details["artifacts"] = artifacts
-
-            try:
-                if equips['weapon']:
-                    rating_details = rate_weapon(equips["weapon"], True)
-                    weapon_rating = rating_details["rating"]
-                    character_details['weapon'] = rating_details
-
-            except KeyError:
-                pass
-
-            except TypeError:
-                pass
-
-            character_rating += difficulty
-            character_rating += star_rating
-            character_rating += level
-            character_rating += weapon_rating
-            character_rating += artifact_rating
-
-            character_details["rating"] = character_rating if check_xp(character) else 0
-            character_details["star_rating"] = character["star rating"] * GPRater.character_star_rating_factor
-            character_details["level"] = character["experience"]["level"] * GPRater.character_level_factor
-            character_details["difficulty"] = difficulty * GPRater.character_difficulty_factor
-
-            return character_details
-
         # characters
-        character_ratings = [rate_character(character) for character in json_data["inventory"]["characters"]]
+        character_ratings = [GPRater.rate_character(character) for character in json_data["inventory"]["characters"]]
         character_ratings.sort(key=lambda x: x["rating"], reverse=True)
         details['per object rating']['characters'] = character_ratings
 
         # artifacts
-        artifact_ratings = [rate_artifact(artifact) for artifact in json_data["inventory"]["artifacts"]]
+        artifact_ratings = [GPRater.rate_artifact(artifact) for artifact in json_data["inventory"]["artifacts"]]
         artifact_ratings.sort(key=lambda x: x["rating"], reverse=True)
         details['per object rating']['artifacts'] = artifact_ratings
 
         # weapons
-        weapon_ratings = [rate_weapon(weapon) for weapon in json_data["inventory"]["weapons"]]
+        weapon_ratings = [GPRater.rate_weapon(weapon) for weapon in json_data["inventory"]["weapons"]]
         weapon_ratings.sort(key=lambda x: x["rating"], reverse=True)
         details['per object rating']['weapons'] = weapon_ratings
 
@@ -329,16 +336,28 @@ class GPRater:
 
         def get_ratings(entity_list: list, get_index: bool = False):
             ratings = []
+            counter = 1
             for entity in entity_list:
-                ratings.append((get_rating(entity), entity_list.index(entity))) if get_index else ratings.append(get_rating(entity))
+                if counter < 100:
+                    ratings.append((get_rating(entity), entity_list.index(entity))) if get_index else ratings.append(
+                        get_rating(entity))
+                    counter += 1
+                else:
+                    break
 
             ratings.sort()
 
             return ratings
 
-        details['totals']['characters']['unweighted'] = (int(sum(get_ratings(character_ratings))) if integer_values else round(sum(get_ratings(character_ratings)), 2)) if GPRater.character_rating_enabled else 0
-        details['totals']['artifacts']['unweighted'] = (int(sum(get_ratings(artifact_ratings))) if integer_values else round(sum(get_ratings(artifact_ratings)), 2)) if GPRater.artifact_rating_enabled else 0
-        details['totals']['weapons']['unweighted'] = (int(sum(get_ratings(weapon_ratings))) if integer_values else round(sum(get_ratings(weapon_ratings)), 2)) if GPRater.weapon_rating_enabled else 0
+        details['totals']['characters']['unweighted'] = (
+            int(sum(get_ratings(character_ratings))) if integer_values else round(sum(get_ratings(character_ratings)),
+                                                                                  2)) if GPRater.character_rating_enabled else 0
+        details['totals']['artifacts']['unweighted'] = (
+            int(sum(get_ratings(artifact_ratings))) if integer_values else round(sum(get_ratings(artifact_ratings)),
+                                                                                 2)) if GPRater.artifact_rating_enabled else 0
+        details['totals']['weapons']['unweighted'] = (
+            int(sum(get_ratings(weapon_ratings))) if integer_values else round(sum(get_ratings(weapon_ratings)),
+                                                                               2)) if GPRater.weapon_rating_enabled else 0
 
         def weight_rater(object_rating, factor, index):
             return object_rating * (factor ** index)
@@ -395,37 +414,21 @@ class GPRater:
         details['rating']['unweighted'] = unweighted
         details['rating']['weighted'] = weighted
 
-        def int_to_roman(num: int) -> str:
-            if not 0 < num < 4000:
-                raise ValueError("Input must be an integer between 1 and 3999.")
+        ranking = Ranking(int(weighted))
 
-            roman_numerals = {10: 'X', 5: 'V', 4: 'IV', 1: 'I'}
-
-            roman_str = ""
-            for value, numeral in roman_numerals.items():
-                while num >= value:
-                    roman_str += numeral
-                    num -= value
-
-            return roman_str
-
-        rank = 'unranked', ''
-
-        for tier_name, tier_values in reversed(GPRater.get_tiers().items()):
-            for tier_value, gp_value in reversed(tier_values.items()):
-                if weighted >= gp_value:
-                    if tier_name == "gentry warrior":
-                        print(weighted, tier_value)
-                        print(int((weighted/int(tier_value))))
-                        rank = tier_name, int_to_roman(int((weighted/int(gp_value)) + 1))
-                    else:
-                        rank = tier_name, int_to_roman(int(tier_value))
-                    break
-
-            if rank[0] != 'unranked':
-                break
-
-        details['ranking']['rank'] = rank[0]
-        details['ranking']['tier'] = rank[1]
+        details['ranking']['rank'] = ranking.rank
+        details['ranking']['tier'] = ranking.tier
 
         return details
+
+    # instance variables
+    overall_rating: Rating
+    character_rating: Rating
+    artifact_rating: Rating
+    weapon_rating: Rating
+
+    def __init__(self):
+        self.overall_rating = Rating()
+        self.character_rating = Rating()
+        self.artifact_rating = Rating()
+        self.weapon_rating = Rating()
