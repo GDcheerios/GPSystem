@@ -1,17 +1,13 @@
+from GPSystem.ItemType import ItemType
 from GPSystem.Ranking import Ranking
 
 
 class Rating:
-    unweighted: float
     weighted: float
+    unweighted: float
     ranking: Ranking
 
-    def __init__(self, weighted: float = 0, unweighted: float = 0):
+    def __init__(self, weighted: float = 0, unweighted: float = 0, item_type: ItemType = None):
         self.weighted = weighted
         self.unweighted = unweighted
-        self.ranking = Ranking(int(weighted))
-
-    def get_rounded(self, digits: int = 0):
-        weighted = round(self.weighted, digits)
-        unweighted = round(self.unweighted, digits)
-        return Rating(weighted, unweighted)
+        self.ranking = Ranking(int(weighted) if not item_type else int(unweighted), item_type=item_type)

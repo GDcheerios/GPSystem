@@ -1,3 +1,4 @@
+from GPSystem.Item import Item
 from GPSystem.ItemType import ItemType
 
 
@@ -46,11 +47,11 @@ class GPRater:
         "diamond": "cyan",
         "champion": "purple",
         "gentry warrior": "lime",
-
     }
 
     @staticmethod
     def get_tiers(item_type: ItemType = None) -> dict:
+        highest_gp = 0
         if item_type:
             if item_type == ItemType.Character:
                 highest_gp = 1000
@@ -173,7 +174,26 @@ class GPRater:
         return item["experience"]["xp"] > 0 or item["experience"]["level"] > 1
 
     @staticmethod
-    def rate_artifact(artifact, is_equipped=False):
+    def get_item_type(item: dict) -> ItemType:
+        if item.get("family"):
+            return ItemType.Artifact
+        if item.get("weapon type"):
+            return ItemType.Weapon
+        else:
+            return ItemType.Character
+
+    @staticmethod
+    def get_rater_by_type(item: Item) -> callable:
+        item_type = GPRater.get_item_type(item.data)
+        if item_type == ItemType.Character:
+            return GPRater.rate_character
+        elif item_type == ItemType.Artifact:
+            return GPRater.rate_artifact
+        else:
+            return GPRater.rate_weapon
+
+    @staticmethod
+    def rate_artifact(artifact, is_equipped=False) -> dict:
         if artifact:
             artifact_details = {
                 "rating": 0,
@@ -206,7 +226,7 @@ class GPRater:
             return artifact_details
 
     @staticmethod
-    def rate_weapon(weapon, is_equipped=False):
+    def rate_weapon(weapon, is_equipped=False) -> dict:
         weapon_details = {
             "rating": 0,
             "name": weapon["name"],
@@ -236,7 +256,7 @@ class GPRater:
         return weapon_details
 
     @staticmethod
-    def rate_character(character):
+    def rate_character(character) -> dict:
         character_details = {
             "rating": 0,
             "name": character["name"],

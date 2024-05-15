@@ -15,7 +15,7 @@ class GPSystem:
 
     @staticmethod
     def retrieve_rater() -> PortableRater:
-        return PortableRater(GPRater())
+        return PortableRater()
 
 
 if __name__ == '__main__':
