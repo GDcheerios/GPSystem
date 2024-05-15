@@ -3,13 +3,13 @@ from GPSystem.GPmain import GPSystem
 from GPSystem.ItemList import ItemList
 
 
-class PortableRater:
-    rater: GPRater
+class PortableRater(GPRater):
     characters: ItemList
     artifacts: ItemList
     weapons: ItemList
 
-    def __init__(self, rater: GPRater):
+    def __init__(self):
+        super().__init__()
         self.characters = ItemList()
         self.artifacts = ItemList()
         self.weapons = ItemList()

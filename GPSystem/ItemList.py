@@ -1,8 +1,8 @@
 from GPSystem.Item import Item
+from GPSystem.ItemType import ItemType
 
 
 class ItemList(list):
-
     def __init__(self):
         super().__init__()
 

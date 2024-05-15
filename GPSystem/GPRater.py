@@ -1,10 +1,41 @@
-import Properties
-
-from GPSystem.Ranking import Ranking
-from GPSystem.Rating import Rating
+from GPSystem.ItemType import ItemType
 
 
 class GPRater:
+    gp_peak = 10000
+
+    # section factors
+    character_factor = 0.95
+    character_rating_enabled = True
+    artifact_factor = 0.5
+    artifact_rating_enabled = True
+    weapon_factor = 0.85
+    weapon_rating_enabled = True
+    max_item_rating = 100
+
+    # character factors
+    character_star_rating_factor = 4
+    character_level_factor = 1.5
+    character_difficulty_factor = 14.5
+
+    # artifact factors
+    artifact_star_rating_factor = 2
+    artifact_level_factor = 1.2
+
+    # weapon factors
+    weapon_star_rating_factor = 2
+    weapon_level_factor = 1.5
+    weapon_attack_factor = 0.2
+
+    # stat attributes
+    health = 1.5
+    attack = 4
+    defense = 1.2
+    crit_rate = 5
+    crit_damage = 4.5
+    speed = 2
+    attack_speed = 2
+
     rating_colors = {
         "unranked": "#082b3b",
         "copper": "red",
@@ -15,11 +46,20 @@ class GPRater:
         "diamond": "cyan",
         "champion": "purple",
         "gentry warrior": "lime",
+
     }
 
     @staticmethod
-    def get_tiers() -> dict:
-        highest_gp = Properties.peak
+    def get_tiers(item_type: ItemType = None) -> dict:
+        if item_type:
+            if item_type == ItemType.Character:
+                highest_gp = 1000
+            elif item_type == ItemType.Artifact:
+                highest_gp = 100
+            elif item_type == ItemType.Weapon:
+                highest_gp = 200
+        else:
+            highest_gp = GPRater.gp_peak
 
         unranked = {
             '1': round(highest_gp * 0)
@@ -90,40 +130,8 @@ class GPRater:
             'gentry warrior': gentry_warrior,
         }
 
-    # section factors
-    character_factor = 0.95
-    character_rating_enabled = True
-    artifact_factor = 0.5
-    artifact_rating_enabled = True
-    weapon_factor = 0.85
-    weapon_rating_enabled = True
-    max_item_rating = 100
-
-    # character factors
-    character_star_rating_factor = 4
-    character_level_factor = 1.5
-    character_difficulty_factor = 14.5
-
-    # artifact factors
-    artifact_star_rating_factor = 2
-    artifact_level_factor = 1.2
-
-    # weapon factors
-    weapon_star_rating_factor = 2
-    weapon_level_factor = 1.5
-    weapon_attack_factor = 0.2
-
-    # stat attributes
-    health = 1.5
-    attack = 4
-    defense = 1.2
-    crit_rate = 5
-    crit_damage = 4.5
-    speed = 2
-    attack_speed = 2
-
     @staticmethod
-    def attribute_rater(attribute):
+    def rate_attribute(attribute) -> float:
         rating = 0
 
         try:
@@ -179,10 +187,10 @@ class GPRater:
             artifact_rating = 0
             star_rating = artifact["star rating"] * GPRater.artifact_star_rating_factor
             level = artifact["experience"]["level"] * GPRater.artifact_level_factor
-            main_attribute = GPRater.attribute_rater(artifact["stats"]["main attribute"])
+            main_attribute = GPRater.rate_attribute(artifact["stats"]["main attribute"])
             attributes = []
             for attribute in artifact["stats"]["attributes"]:
-                attributes.append(GPRater.attribute_rater(attribute))
+                attributes.append(GPRater.rate_attribute(attribute))
 
             artifact_rating += star_rating
             artifact_rating += level
@@ -280,155 +288,3 @@ class GPRater:
         character_details["difficulty"] = difficulty * GPRater.character_difficulty_factor
 
         return character_details
-
-    @staticmethod
-    def generate_power_details(json_data, integer_values: bool = False) -> dict:
-        details = {
-            'version': 'Classic',
-            'rating': {
-                'unweighted': 0,
-                'weighted': 0
-            },
-            'ranking': {
-                'rank': 'unranked',
-                'tier': ''
-            },
-            'totals': {
-                'characters': {
-                    'unweighted': 0,
-                    'weighted': 0
-                },
-                'weapons': {
-                    'unweighted': 0,
-                    'weighted': 0
-                },
-                'artifacts': {
-                    'unweighted': 0,
-                    'weighted': 0
-                }
-            },
-            'per object rating': {
-                'characters': [],
-                'weapons': [],
-                'artifacts': []
-            }
-        }
-
-        power_level = 0
-
-        # characters
-        character_ratings = [GPRater.rate_character(character) for character in json_data["inventory"]["characters"]]
-        character_ratings.sort(key=lambda x: x["rating"], reverse=True)
-        details['per object rating']['characters'] = character_ratings
-
-        # artifacts
-        artifact_ratings = [GPRater.rate_artifact(artifact) for artifact in json_data["inventory"]["artifacts"]]
-        artifact_ratings.sort(key=lambda x: x["rating"], reverse=True)
-        details['per object rating']['artifacts'] = artifact_ratings
-
-        # weapons
-        weapon_ratings = [GPRater.rate_weapon(weapon) for weapon in json_data["inventory"]["weapons"]]
-        weapon_ratings.sort(key=lambda x: x["rating"], reverse=True)
-        details['per object rating']['weapons'] = weapon_ratings
-
-        def get_rating(rating_details):
-            return rating_details["rating"]
-
-        def get_ratings(entity_list: list, get_index: bool = False):
-            ratings = []
-            counter = 1
-            for entity in entity_list:
-                if counter < 100:
-                    ratings.append((get_rating(entity), entity_list.index(entity))) if get_index else ratings.append(
-                        get_rating(entity))
-                    counter += 1
-                else:
-                    break
-
-            ratings.sort()
-
-            return ratings
-
-        details['totals']['characters']['unweighted'] = (
-            int(sum(get_ratings(character_ratings))) if integer_values else round(sum(get_ratings(character_ratings)),
-                                                                                  2)) if GPRater.character_rating_enabled else 0
-        details['totals']['artifacts']['unweighted'] = (
-            int(sum(get_ratings(artifact_ratings))) if integer_values else round(sum(get_ratings(artifact_ratings)),
-                                                                                 2)) if GPRater.artifact_rating_enabled else 0
-        details['totals']['weapons']['unweighted'] = (
-            int(sum(get_ratings(weapon_ratings))) if integer_values else round(sum(get_ratings(weapon_ratings)),
-                                                                               2)) if GPRater.weapon_rating_enabled else 0
-
-        def weight_rater(object_rating, factor, index):
-            return object_rating * (factor ** index)
-
-        section_pl = 0
-        if GPRater.character_rating_enabled:
-            for character_rating in get_ratings(character_ratings, True):
-                rating = weight_rater(character_rating[0], GPRater.character_factor, character_rating[1])
-                section_pl += rating
-                power_level += rating
-
-            details['totals']['characters']['weighted'] = int(section_pl) if integer_values else round(section_pl, 2)
-        else:
-            details['totals']['characters']['weighted'] = 0
-
-        section_pl = 0
-        if GPRater.artifact_rating_enabled:
-            for artifact_rating in get_ratings(artifact_ratings, True):
-                rating = weight_rater(artifact_rating[0], GPRater.artifact_factor, artifact_rating[1])
-                section_pl += rating
-                power_level += rating
-
-            details['totals']['artifacts']['weighted'] = int(section_pl) if integer_values else round(section_pl, 2)
-        else:
-            details['totals']['artifacts']['weighted'] = 0
-
-        section_pl = 0
-        if GPRater.weapon_rating_enabled:
-            for weapon_rating in get_ratings(weapon_ratings, True):
-                rating = weight_rater(weapon_rating[0], GPRater.weapon_factor, weapon_rating[1])
-                section_pl += rating
-                power_level += rating
-
-            details['totals']['weapons']['weighted'] = int(section_pl) if integer_values else round(section_pl, 2)
-        else:
-            details['totals']['weapons']['weighted'] = 0
-
-        if integer_values:
-            unweighted = int(
-                details['totals']['characters']['unweighted'] +
-                details['totals']['artifacts']['unweighted'] +
-                details['totals']['weapons']['unweighted']
-            )
-            weighted = int(power_level)
-        else:
-            unweighted = round(
-                details['totals']['characters']['unweighted'] +
-                details['totals']['artifacts']['unweighted'] +
-                details['totals']['weapons']['unweighted'],
-                2
-            )
-            weighted = round(power_level, 2)
-
-        details['rating']['unweighted'] = unweighted
-        details['rating']['weighted'] = weighted
-
-        ranking = Ranking(int(weighted))
-
-        details['ranking']['rank'] = ranking.rank
-        details['ranking']['tier'] = ranking.tier
-
-        return details
-
-    # instance variables
-    overall_rating: Rating
-    character_rating: Rating
-    artifact_rating: Rating
-    weapon_rating: Rating
-
-    def __init__(self):
-        self.overall_rating = Rating()
-        self.character_rating = Rating()
-        self.artifact_rating = Rating()
-        self.weapon_rating = Rating()
