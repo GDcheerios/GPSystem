@@ -1,9 +1,12 @@
-from GPRater import GPRater
+try:
+    from .GPRater import GPRater
+except ImportError:
+    from GPRater import GPRater
 
 
 class GPSystem:
     rater = GPRater()
-    version = "2.0"
+    version = "2.0.1"
 
     def __init__(self):
         print("You're using GPSystem version ", GPSystem.version)
