@@ -5,9 +5,9 @@ class GPRater:
     character_factor = 0.95
     character_rating_enabled = True
     artifact_factor = 0.5
-    artifact_rating_enabled = True
+    artifact_rating_enabled = False
     weapon_factor = 0.85
-    weapon_rating_enabled = True
+    weapon_rating_enabled = False
     max_item_rating = 100
 
     # character factors
