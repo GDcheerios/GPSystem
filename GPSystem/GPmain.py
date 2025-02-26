@@ -6,10 +6,6 @@ except ImportError:
 
 class GPSystem:
     rater = GPRater()
-    version = "2.4.0"
-
-    def __init__(self):
-        print("You're using GPSystem version ", GPSystem.version)
 
 
 def test_rating_tier(recursions: int, factor: int):
