@@ -6,7 +6,7 @@ except ImportError:
 
 class GPSystem:
     rater = GPRater()
-    version = "2.3.0"
+    version = "2.4.0"
 
     def __init__(self):
         print("You're using GPSystem version ", GPSystem.version)
