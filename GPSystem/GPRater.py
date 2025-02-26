@@ -11,27 +11,33 @@ class GPRater:
     max_item_rating = 100
 
     # character factors
-    character_star_rating_factor = 5
-    character_level_factor = 2
-    character_difficulty_factor = 100
+    character_star_rating_factor = 25
+    character_level_factor = 1
+    character_difficulty_factor = 20
+    character_artifact_factor = 1
+    character_weapon_factor = 1
 
     # artifact factors
-    artifact_star_rating_factor = 3
-    artifact_level_factor = 1.2
+    artifact_star_rating_factor = 10
+    artifact_level_factor = 1
+    artifact_main_attribute_factor = 5
+    artifact_attribute_factor = 0.5
 
     # weapon factors
-    weapon_star_rating_factor = 2
-    weapon_level_factor = 1.5
-    weapon_attack_factor = 0.2
+    weapon_star_rating_factor = 25
+    weapon_level_factor = 1
+    weapon_attack_factor = 0
+    weapon_attribute_factor = 5
 
     # stat attributes
-    health = 1.5
-    attack = 4
-    defense = 1.2
-    crit_rate = 5
-    crit_damage = 4.5
-    speed = 2
-    attack_speed = 2
+    health = 1
+    attack = 1
+    defense = 1
+    crit_rate = 1
+    crit_damage = 1
+    speed = 1
+    attack_speed = 1
+    tenacity = 1
 
     rating_colors = {
         "unranked": "#082b3b",
@@ -58,7 +64,7 @@ class GPRater:
             '2': round(highest_gp * 0.0325),
             '3': round(highest_gp * 0.035),
             '4': round(highest_gp * 0.0375),
-            '5': round(highest_gp * 0.04),
+            '5': round(highest_gp * 0.04)
         }
 
         bronze = {
@@ -66,7 +72,7 @@ class GPRater:
             '2': round(highest_gp * 0.06),
             '3': round(highest_gp * 0.07),
             '4': round(highest_gp * 0.08),
-            '5': round(highest_gp * 0.09),
+            '5': round(highest_gp * 0.09)
         }
 
         silver = {
@@ -74,7 +80,7 @@ class GPRater:
             '2': round(highest_gp * 0.115),
             '3': round(highest_gp * 0.130),
             '4': round(highest_gp * 0.145),
-            '5': round(highest_gp * 0.16),
+            '5': round(highest_gp * 0.16)
         }
 
         gold = {
@@ -120,6 +126,12 @@ class GPRater:
 
     @staticmethod
     def rate_attribute(attribute) -> float:
+        """
+        With a given attribute, rate it.
+
+        :param attribute: Attribute to rate
+        :return: Rating of attribute
+        """
         rating = 0
 
         try:
@@ -158,17 +170,31 @@ class GPRater:
 
     @staticmethod
     def is_ratable(item: dict) -> bool:
+        """
+        Check if an item has experience then it is ratable.
+
+        :param item: Item to check.
+        :return: If the item is ratable.
+        """
+
         return item["experience"]["xp"] > 0 or item["experience"]["level"] > 1
 
     @staticmethod
-    def get_artifact_rating(artifact) -> float:
+    def get_artifact_rating(artifact: dict) -> float:
+        """
+        Go through an artifact and rate it.
+
+        :param artifact: The artifact to rate.
+        :return: Artifact rating.
+        """
+
         artifact_rating = 0
         star_rating = artifact["star rating"] * GPRater.artifact_star_rating_factor
         level = artifact["experience"]["level"] * GPRater.artifact_level_factor
-        main_attribute = GPRater.rate_attribute(artifact["stats"]["main attribute"])
+        main_attribute = GPRater.rate_attribute(artifact["stats"]["main attribute"]) * GPRater.artifact_main_attribute_factor
         attributes = []
         for attribute in artifact["stats"]["attributes"]:
-            attributes.append(GPRater.rate_attribute(attribute))
+            attributes.append(GPRater.rate_attribute(attribute) * GPRater.artifact_attribute_factor)
 
         artifact_rating += star_rating
         artifact_rating += level
@@ -178,21 +204,35 @@ class GPRater:
         return artifact_rating
 
     @staticmethod
-    def get_weapon_rating(weapon) -> float:
+    def get_weapon_rating(weapon: dict) -> float:
+        """
+        Go through a weapon and rate it.
+
+        :param weapon: The weapon to rate.
+        :return: Weapon rating.
+        """
 
         weapon_rating = 0
         star_rating = weapon["star rating"] * GPRater.weapon_star_rating_factor
         level = weapon["experience"]["level"] * GPRater.weapon_level_factor
+        buff = GPRater.rate_attribute(weapon["stats"]["buff"]) * GPRater.weapon_attribute_factor
         attack = 0
 
         weapon_rating += star_rating
         weapon_rating += level
         weapon_rating += attack
+        weapon_rating += buff
 
         return weapon_rating
 
     @staticmethod
-    def get_character_rating(character) -> float:
+    def get_character_rating(character: dict) -> float:
+        """
+        Go through a character and rate it.
+
+        :param character: The character to rate.
+        :return: Character rating.
+        """
 
         character_rating = 0
         difficulty = (character["experience"]["level"] / 20) + 1
@@ -202,11 +242,11 @@ class GPRater:
         equips = character["equips"]
         for artifact in equips["artifacts"]:
             if artifact:
-                character_rating += GPRater.get_artifact_rating(artifact)
+                character_rating += GPRater.get_artifact_rating(artifact) * GPRater.character_artifact_factor
 
         try:
             if equips['weapon']:
-                character_rating += GPRater.get_weapon_rating(equips['weapon'])
+                character_rating += GPRater.get_weapon_rating(equips['weapon']) * GPRater.character_weapon_factor
 
         except KeyError:
             pass
@@ -221,7 +261,7 @@ class GPRater:
         return character_rating
 
     @staticmethod
-    def get_rank(rating) -> tuple:
+    def get_rank(rating: int) -> tuple:
         def int_to_roman(num: int) -> str:
             if not 0 < num < 4000:
                 raise ValueError("Input must be an integer between 1 and 3999.")

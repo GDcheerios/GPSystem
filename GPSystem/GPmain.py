@@ -12,22 +12,34 @@ class GPSystem:
         print("You're using GPSystem version ", GPSystem.version)
 
 
-if __name__ == '__main__':
-    import os
-    import pyperclip
-    import json
-    from tabulate import tabulate
+def test_rating_tier(recursions: int, factor: int):
+    for i in range(recursions + 1, 0, -1):
+        rating = i * factor
+        print(rating, program.rater.get_rank(i * 100))
 
-    table_style = "pipe"
-    file_path = "GPSystem/Data"
+
+if __name__ == '__main__':
+    import json
+
     program = GPSystem()
-    # if os.path.isdir(file_path):
-    #     pass
-    # else:
-    #     os.mkdir(file_path)
 
     print(json.dumps(program.rater.get_tiers(), indent=4))
 
-    for i in range(500):
-        rating = i * 100
-        print(rating, program.rater.get_rank(i * 100))
+    rating = 0
+    character = program.rater.get_character_rating(test_character_data)
+    artifact = program.rater.get_artifact_rating(test_artifact_data)
+    weapon = program.rater.get_weapon_rating(test_weapon_data)
+
+    rating += character
+    rating += artifact
+    rating += weapon
+
+    print(f"""
+        Character: {character}
+        Artifact: {artifact}
+        Weapon: {weapon}
+        
+        Total: {rating}
+    """)
+
+    print(program.rater.get_rank(rating))
