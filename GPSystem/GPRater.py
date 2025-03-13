@@ -11,20 +11,20 @@ class GPRater:
     max_item_rating = 100
 
     # character factors
-    character_star_rating_factor = 20
-    character_level_factor = 2
-    character_difficulty_factor = 20
+    character_star_rating_factor = 2
+    character_level_factor = 1
+    character_difficulty_factor = 100
     character_artifact_factor = 1
     character_weapon_factor = 1
 
     # artifact factors
-    artifact_star_rating_factor = 20
+    artifact_star_rating_factor = 2
     artifact_level_factor = 4
     artifact_main_attribute_factor = 5
     artifact_attribute_factor = 1
 
     # weapon factors
-    weapon_star_rating_factor = 20
+    weapon_star_rating_factor = 2
     weapon_level_factor = 1
     weapon_attack_factor = 0
     weapon_attribute_factor = 5
