@@ -18,7 +18,7 @@ jobs:
 
       - name: Queue Ratings for Development
         run: |
-          curl -X POST https://gdcheerios.com/queue-ratings \
+          curl -X POST https://dev.gdcheerios.com/queue-ratings \
                -H "Authorization: Bearer ${{ secrets.secret }}" \
                -H "Content-Type: application/json" \
                -d '{"environment": "development"}'
