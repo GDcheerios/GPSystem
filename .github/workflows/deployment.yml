@@ -12,13 +12,13 @@ jobs:
       - name: Queue Ratings for Production
         run: |
           curl -X POST https://gdcheerios.com/queue-ratings \
-               -H "Authorization: Bearer ${{ secrets.secret }}" \
+               -H "Authorization: Bearer ${{ secrets.SECRET }}" \
                -H "Content-Type: application/json" \
-               -d '{"environment": "production"}'
+               -d '{"environment": "Production"}'
 
       - name: Queue Ratings for Development
         run: |
           curl -X POST https://dev.gdcheerios.com/queue-ratings \
-               -H "Authorization: Bearer ${{ secrets.secret }}" \
+               -H "Authorization: Bearer ${{ secrets.SECRET }}" \
                -H "Content-Type: application/json" \
-               -d '{"environment": "development"}'
+               -d '{"environment": "Development"}'
