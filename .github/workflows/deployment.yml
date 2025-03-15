@@ -1,0 +1,24 @@
+name: Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  queue-ratings:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Queue Ratings for Production
+        run: |
+          curl -X POST https://gdcheerios.com/queue-ratings \
+               -H "Authorization: Bearer ${{ secrets.secret }}" \
+               -H "Content-Type: application/json" \
+               -d '{"environment": "production"}'
+
+      - name: Queue Ratings for Development
+        run: |
+          curl -X POST https://gdcheerios.com/queue-ratings \
+               -H "Authorization: Bearer ${{ secrets.secret }}" \
+               -H "Content-Type: application/json" \
+               -d '{"environment": "development"}'
