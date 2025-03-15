@@ -290,3 +290,41 @@ class GPRater:
             return "gentry warrior", int_to_roman(warrior_tier)
 
         return previous_rank, int_to_roman(int(previous_tier))
+
+    @staticmethod
+    def get_rating(type: str, metadata: dict) -> float:
+        if type == "artifact":
+            return GPRater.get_artifact_rating(metadata)
+        elif type == "character":
+            return GPRater.get_character_rating(metadata)
+        elif type == "weapon":
+            return GPRater.get_weapon_rating(metadata)
+        else:
+            return 0
+
+    @staticmethod
+    def get_user_rating(items: list, testing: bool = False) -> float:
+        rating = 0
+        counter = 0
+
+        if testing:
+            items.sort(key=lambda x: x["new rating"], reverse=True)
+        else:
+            items.sort(key=lambda x: x["rating"], reverse=True)
+
+        for item in items:
+            if item["type"] == "artifact" and GPRater.artifact_rating_enabled:
+                rating += round(item["new rating"] * GPRater.artifact_factor ** counter)
+            elif item["type"] == "character" and GPRater.character_rating_enabled:
+                rating += round(item["new rating"] * GPRater.character_factor ** counter)
+            elif item["type"] == "weapon" and GPRater.weapon_rating_enabled:
+                rating += round(item["new rating"] * GPRater.weapon_factor ** counter)
+            else:
+                rating += 0
+
+            counter += 1
+
+            if counter == GPRater.max_item_rating:
+                break
+
+        return rating

@@ -67,37 +67,15 @@ if __name__ == '__main__':
 
     print("Processing data...")
     for item in items:
-        if item["type"] == "artifact":
-            item["new rating"] = program.rater.get_artifact_rating(item["metadata"])
-        elif item["type"] == "character":
-            item["new rating"] = program.rater.get_character_rating(item["metadata"])
-        else:
-            item["new rating"] = program.rater.get_weapon_rating(item["metadata"])
-
+        item["new rating"] = program.rater.get_rating(item["type"], item["metadata"])
         item["new rating"] = round(item["new rating"])
-
-    items.sort(key=lambda x: x["new rating"], reverse=True)
 
     for user in users:
         new_rating = 0
         counter = 0
 
-        for item in items:
-            if item["owner"] == user["id"]:
-                if item["type"] == "artifact" and program.rater.artifact_rating_enabled:
-                    new_rating += round(item["new rating"] * program.rater.artifact_factor ** counter)
-                    counter += 1
-                elif item["type"] == "character" and program.rater.character_rating_enabled:
-                    new_rating += round(item["new rating"] * program.rater.character_factor ** counter)
-                    counter += 1
-                elif item["type"] == "weapon" and program.rater.weapon_rating_enabled:
-                    new_rating += round(item["new rating"] * program.rater.weapon_factor ** counter)
-                    counter += 1
-
-            if counter == program.rater.max_item_rating:
-                break
-
-        user["new rating"] = new_rating
+        user_items = [item for item in items if item["owner"] == user["id"]]
+        user["new rating"] = program.rater.get_user_rating(user_items, True)
 
     user_table = tabulate.tabulate(
         [(user["id"], user["c_weighted"], user["new rating"]) for user in users],
