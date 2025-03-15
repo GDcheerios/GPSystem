@@ -1,8 +1,8 @@
 from setuptools import setup
 
 setup(
-    name='GPSystemTest',
-    version='2.5.0',
+    name='GPSystem',
+    version='2.5.1',
     packages=['GPSystem'],
     url='https://github.com/GDcheeriosYT/GPSystem',
     license='UNKOWN',
