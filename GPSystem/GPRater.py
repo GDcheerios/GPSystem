@@ -261,35 +261,36 @@ class GPRater:
         return character_rating
 
     @staticmethod
+    def int_to_roman(num: int) -> str:
+        if not 0 < num < 4000:
+            raise ValueError("Input must be an integer between 1 and 3999.")
+
+        roman_numerals = {10: 'X', 5: 'V', 4: 'IV', 1: 'I'}
+
+        roman_str = ""
+        for value, numeral in roman_numerals.items():
+            while num >= value:
+                roman_str += numeral
+                num -= value
+
+        return roman_str
+
+    @staticmethod
     def get_rank(rating: int) -> tuple:
-        def int_to_roman(num: int) -> str:
-            if not 0 < num < 4000:
-                raise ValueError("Input must be an integer between 1 and 3999.")
-
-            roman_numerals = {10: 'X', 5: 'V', 4: 'IV', 1: 'I'}
-
-            roman_str = ""
-            for value, numeral in roman_numerals.items():
-                while num >= value:
-                    roman_str += numeral
-                    num -= value
-
-            return roman_str
-
         tiers = GPRater.get_tiers()
 
         for rank, levels in tiers.items():
             for tier, threshold in levels.items():
                 if rating < threshold:
-                    return previous_rank, int_to_roman(int(previous_tier))
+                    return previous_rank, int(previous_tier)
 
                 previous_rank, previous_tier = rank, tier
 
         if previous_rank == "gentry warrior":
             warrior_tier = (rating // tiers["gentry warrior"]["1"])
-            return "gentry warrior", int_to_roman(warrior_tier)
+            return "gentry warrior", warrior_tier
 
-        return previous_rank, int_to_roman(int(previous_tier))
+        return previous_rank, int(previous_tier)
 
     @staticmethod
     def get_rating(type: str, metadata: dict) -> float:
