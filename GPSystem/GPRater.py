@@ -53,6 +53,12 @@ class GPRater:
 
     @staticmethod
     def get_tiers() -> dict:
+        """
+        retrieve the ranking tier values.
+
+        :return: rank data
+        """
+
         highest_gp = GPRater.gp_peak
 
         unranked = {
@@ -262,6 +268,13 @@ class GPRater:
 
     @staticmethod
     def int_to_roman(num: int) -> str:
+        """
+        turns an integer to a roman.
+
+        :param num: Integer to convert
+        :return: str of roman numberal
+        """
+
         if not 0 < num < 4000:
             raise ValueError("Input must be an integer between 1 and 3999.")
 
@@ -277,6 +290,13 @@ class GPRater:
 
     @staticmethod
     def get_rank(rating: int) -> tuple:
+        """
+        Converts rating(GP) into a rank.
+
+        :param rating: The GP to convert
+        :return: Ranking
+        """
+
         tiers = GPRater.get_tiers()
 
         for rank, levels in tiers.items():
@@ -294,6 +314,14 @@ class GPRater:
 
     @staticmethod
     def get_rating(type: str, metadata: dict) -> float:
+        """
+        Get the rating based off the type and metadata of item.
+        
+        :param type: A string representing the type of item
+        :param metadata: The data of the item
+        :return: An integer representing the GP
+        """
+
         if type == "artifact":
             return GPRater.get_artifact_rating(metadata)
         elif type == "character":
@@ -305,6 +333,14 @@ class GPRater:
 
     @staticmethod
     def get_user_rating(items: list, testing: bool = False) -> float:
+        """
+        Grabs the rating of the user based off the items the user has.
+
+        :param items: The list of the user's items
+        :param testing: If testing new values
+        :return: User's GP
+        """
+
         rating = 0
         counter = 0
 
