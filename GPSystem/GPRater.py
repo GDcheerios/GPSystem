@@ -250,7 +250,7 @@ class GPRater:
                 character_rating += GPRater.get_artifact_rating(artifact) * GPRater.character_artifact_factor
 
         try:
-            if equips['CurrentWeapon']:
+            if character['CurrentWeapon']:
                 character_rating += GPRater.get_weapon_rating(equips['CurrentWeapon']) * GPRater.character_weapon_factor
 
         except KeyError:
