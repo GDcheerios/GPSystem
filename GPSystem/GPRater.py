@@ -350,11 +350,11 @@ class GPRater:
 
         for item in items:
             if item["type"] == "artifact" and GPRater.artifact_rating_enabled:
-                rating += round(item["new rating"] * GPRater.artifact_factor ** counter)
+                rating += round(item["rating"] * GPRater.artifact_factor ** counter)
             elif item["type"] == "character" and GPRater.character_rating_enabled:
-                rating += round(item["new rating"] * GPRater.character_factor ** counter)
+                rating += round(item["rating"] * GPRater.character_factor ** counter)
             elif item["type"] == "weapon" and GPRater.weapon_rating_enabled:
-                rating += round(item["new rating"] * GPRater.weapon_factor ** counter)
+                rating += round(item["rating"] * GPRater.weapon_factor ** counter)
             else:
                 rating += 0
 
