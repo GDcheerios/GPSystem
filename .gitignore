@@ -4,4 +4,4 @@
 *.json
 /.idea/
 *.env
-*.pyc
+GPSystem/__pycache__

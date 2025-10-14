@@ -195,17 +195,17 @@ class GPRater:
         """
 
         artifact_rating = 0
-        star_rating = artifact["star rating"] * GPRater.artifact_star_rating_factor
-        level = artifact["experience"]["level"] * GPRater.artifact_level_factor
-        main_attribute = GPRater.rate_attribute(artifact["stats"]["main attribute"]) * GPRater.artifact_main_attribute_factor
-        attributes = []
-        for attribute in artifact["stats"]["attributes"]:
-            attributes.append(GPRater.rate_attribute(attribute) * GPRater.artifact_attribute_factor)
+        star_rating = artifact["StarRating"] * GPRater.artifact_star_rating_factor
+        level = artifact['Level'] * GPRater.artifact_level_factor
+        # main_attribute = GPRater.rate_attribute(artifact["stats"]["main attribute"]) * GPRater.artifact_main_attribute_factor
+        # attributes = []
+        # for attribute in artifact["stats"]["attributes"]:
+        #     attributes.append(GPRater.rate_attribute(attribute) * GPRater.artifact_attribute_factor)
 
         artifact_rating += star_rating
         artifact_rating += level
-        artifact_rating += main_attribute
-        artifact_rating += sum(attributes)
+        # artifact_rating += main_attribute
+        # artifact_rating += sum(attributes)
 
         return artifact_rating
 
@@ -219,9 +219,9 @@ class GPRater:
         """
 
         weapon_rating = 0
-        star_rating = weapon["star rating"] * GPRater.weapon_star_rating_factor
-        level = weapon["experience"]["level"] * GPRater.weapon_level_factor
-        buff = GPRater.rate_attribute(weapon["stats"]["buff"]) * GPRater.weapon_attribute_factor
+        star_rating = weapon["StarRating"] * GPRater.weapon_star_rating_factor
+        level = weapon["Level"] * GPRater.weapon_level_factor
+        # buff = GPRater.rate_attribute(weapon["stats"]["buff"]) * GPRater.weapon_attribute_factor
         attack = 0
 
         weapon_rating += star_rating
@@ -241,18 +241,17 @@ class GPRater:
         """
 
         character_rating = 0
-        difficulty = (character["experience"]["level"] / 20) + 1
-        star_rating = character["star rating"] * GPRater.character_star_rating_factor
-        level = character["experience"]["level"] * GPRater.character_level_factor
+        difficulty = (character["Level"] / 20) + 1
+        star_rating = character["StarRating"] * GPRater.character_star_rating_factor
+        level = character["Level"] * GPRater.character_level_factor
         difficulty = difficulty * GPRater.character_difficulty_factor
-        equips = character["equips"]
-        for artifact in equips["artifacts"]:
+        for artifact in character["Artifacts"]:
             if artifact:
                 character_rating += GPRater.get_artifact_rating(artifact) * GPRater.character_artifact_factor
 
         try:
-            if equips['weapon']:
-                character_rating += GPRater.get_weapon_rating(equips['weapon']) * GPRater.character_weapon_factor
+            if equips['CurrentWeapon']:
+                character_rating += GPRater.get_weapon_rating(equips['CurrentWeapon']) * GPRater.character_weapon_factor
 
         except KeyError:
             pass
