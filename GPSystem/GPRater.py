@@ -2,12 +2,12 @@ class GPRater:
     gp_peak = 10000
 
     # section factors
-    character_factor = 0.95
+    character_factor = 1
     character_rating_enabled = True
-    artifact_factor = 0.5
-    artifact_rating_enabled = False
-    weapon_factor = 0.85
-    weapon_rating_enabled = False
+    artifact_factor = 1
+    artifact_rating_enabled = True
+    weapon_factor = 1
+    weapon_rating_enabled = True
     max_item_rating = 100
 
     # character factors
@@ -138,41 +138,46 @@ class GPRater:
         :param attribute: Attribute to rate
         :return: Rating of attribute
         """
-        rating = 0
 
         try:
-            if isinstance(attribute, dict):
-                attribute = attribute["buff"]
+            rating = 0
 
-            if attribute[0] == 1:  # health
-                rating += attribute[2] * GPRater.health
+            try:
+                if isinstance(attribute, dict):
+                    attribute = attribute["buff"]
 
-            elif attribute[0] == 2:  # attack
-                rating += attribute[2] * GPRater.attack
+                if attribute[0] == 1:  # health
+                    rating += attribute[2] * GPRater.health
 
-            elif attribute[0] == 3:  # defense
-                rating += attribute[2] * GPRater.defense
+                elif attribute[0] == 2:  # attack
+                    rating += attribute[2] * GPRater.attack
 
-            elif attribute[0] == 4:  # crit rate
-                rating += attribute[2] * GPRater.crit_rate
+                elif attribute[0] == 3:  # defense
+                    rating += attribute[2] * GPRater.defense
 
-            elif attribute[0] == 5:  # crit damage
-                rating += attribute[2] * GPRater.crit_damage
-        except KeyError:
-            if attribute['stat'] == 'Health':
-                rating += attribute['level'] * GPRater.health
-            elif attribute['stat'] == 'Attack':
-                rating += attribute['level'] * GPRater.attack
-            elif attribute['stat'] == 'Defense':
-                rating += attribute['level'] * GPRater.defense
-            elif attribute['stat'] == 'CritRate':
-                rating += attribute['level'] * GPRater.crit_rate
-            elif attribute['stat'] == 'CritDamage':
-                rating += attribute['level'] * GPRater.crit_damage
-            else:
-                rating += attribute['level']
+                elif attribute[0] == 4:  # crit rate
+                    rating += attribute[2] * GPRater.crit_rate
 
-        return rating
+                elif attribute[0] == 5:  # crit damage
+                    rating += attribute[2] * GPRater.crit_damage
+            except KeyError:
+                if attribute['stat'] == 'Health':
+                    rating += attribute['level'] * GPRater.health
+                elif attribute['stat'] == 'Attack':
+                    rating += attribute['level'] * GPRater.attack
+                elif attribute['stat'] == 'Defense':
+                    rating += attribute['level'] * GPRater.defense
+                elif attribute['stat'] == 'CritRate':
+                    rating += attribute['level'] * GPRater.crit_rate
+                elif attribute['stat'] == 'CritDamage':
+                    rating += attribute['level'] * GPRater.crit_damage
+                else:
+                    rating += attribute['level']
+
+            return rating
+        except Exception as e:
+            print(f"GPRater found an issue: {e}")
+            return 0
 
     @staticmethod
     def is_ratable(item: dict) -> bool:
@@ -183,7 +188,11 @@ class GPRater:
         :return: If the item is ratable.
         """
 
-        return item["experience"]["xp"] > 0 or item["experience"]["level"] > 1
+        try:
+            return item["experience"]["xp"] > 0 or item["experience"]["level"] > 1
+        except KeyError as e:
+            print(f"GPRater found an issue: {e}")
+            return False
 
     @staticmethod
     def get_artifact_rating(artifact: dict) -> float:
@@ -194,20 +203,24 @@ class GPRater:
         :return: Artifact rating.
         """
 
-        artifact_rating = 0
-        star_rating = artifact["StarRating"] * GPRater.artifact_star_rating_factor
-        level = artifact['Level'] * GPRater.artifact_level_factor
-        # main_attribute = GPRater.rate_attribute(artifact["stats"]["main attribute"]) * GPRater.artifact_main_attribute_factor
-        # attributes = []
-        # for attribute in artifact["stats"]["attributes"]:
-        #     attributes.append(GPRater.rate_attribute(attribute) * GPRater.artifact_attribute_factor)
+        try:
+            artifact_rating = 0
+            star_rating = artifact["StarRating"] * GPRater.artifact_star_rating_factor
+            level = artifact['Level'] * GPRater.artifact_level_factor
+            # main_attribute = GPRater.rate_attribute(artifact["stats"]["main attribute"]) * GPRater.artifact_main_attribute_factor
+            # attributes = []
+            # for attribute in artifact["stats"]["attributes"]:
+            #     attributes.append(GPRater.rate_attribute(attribute) * GPRater.artifact_attribute_factor)
 
-        artifact_rating += star_rating
-        artifact_rating += level
-        # artifact_rating += main_attribute
-        # artifact_rating += sum(attributes)
+            artifact_rating += star_rating
+            artifact_rating += level
+            # artifact_rating += main_attribute
+            # artifact_rating += sum(attributes)
 
-        return artifact_rating
+            return artifact_rating
+        except Exception as e:
+            print(f"GPRater found an issue: {e}")
+            return 0
 
     @staticmethod
     def get_weapon_rating(weapon: dict) -> float:
@@ -218,18 +231,22 @@ class GPRater:
         :return: Weapon rating.
         """
 
-        weapon_rating = 0
-        star_rating = weapon["StarRating"] * GPRater.weapon_star_rating_factor
-        level = weapon["Level"] * GPRater.weapon_level_factor
-        # buff = GPRater.rate_attribute(weapon["stats"]["buff"]) * GPRater.weapon_attribute_factor
-        attack = 0
+        try:
+            weapon_rating = 0
+            star_rating = weapon["StarRating"] * GPRater.weapon_star_rating_factor
+            level = weapon["Level"] * GPRater.weapon_level_factor
+            # buff = GPRater.rate_attribute(weapon["stats"]["buff"]) * GPRater.weapon_attribute_factor
+            attack = 0
 
-        weapon_rating += star_rating
-        weapon_rating += level
-        weapon_rating += attack
-        weapon_rating += buff
+            weapon_rating += star_rating
+            weapon_rating += level
+            # weapon_rating += attack
+            # weapon_rating += buff
 
-        return weapon_rating
+            return weapon_rating
+        except Exception as e:
+            print(f"GPRater found an issue: {e}")
+            return 0
 
     @staticmethod
     def get_character_rating(character: dict) -> float:
@@ -240,30 +257,34 @@ class GPRater:
         :return: Character rating.
         """
 
-        character_rating = 0
-        difficulty = (character["Level"] / 20) + 1
-        star_rating = character["StarRating"] * GPRater.character_star_rating_factor
-        level = character["Level"] * GPRater.character_level_factor
-        difficulty = difficulty * GPRater.character_difficulty_factor
-        for artifact in character["Artifacts"]:
-            if artifact:
-                character_rating += GPRater.get_artifact_rating(artifact) * GPRater.character_artifact_factor
-
         try:
-            if character['CurrentWeapon']:
-                character_rating += GPRater.get_weapon_rating(equips['CurrentWeapon']) * GPRater.character_weapon_factor
+            character_rating = 0
+            difficulty = (character["Level"] / 20) + 1
+            star_rating = character["StarRating"] * GPRater.character_star_rating_factor
+            level = character["Level"] * GPRater.character_level_factor
+            difficulty = difficulty * GPRater.character_difficulty_factor
+            for artifact in character["Artifacts"]:
+                if artifact:
+                    character_rating += GPRater.get_artifact_rating(artifact) * GPRater.character_artifact_factor
 
-        except KeyError:
-            pass
+            try:
+                if character['CurrentWeapon']:
+                    character_rating += GPRater.get_weapon_rating(character['CurrentWeapon']) * GPRater.character_weapon_factor
 
-        except TypeError:
-            pass
+            except KeyError:
+                pass
 
-        character_rating += difficulty
-        character_rating += star_rating
-        character_rating += level
+            except TypeError:
+                pass
 
-        return character_rating
+            character_rating += difficulty
+            character_rating += star_rating
+            character_rating += level
+
+            return character_rating
+        except Exception as e:
+            print(f"GPRater found an issue: {e}")
+            return 0
 
     @staticmethod
     def int_to_roman(num: int) -> str:
@@ -271,7 +292,7 @@ class GPRater:
         turns an integer to a roman.
 
         :param num: Integer to convert
-        :return: str of roman numberal
+        :return: str of roman numeral
         """
 
         if not 0 < num < 4000:
