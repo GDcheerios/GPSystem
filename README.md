@@ -4,8 +4,7 @@ The Gentry's Quest Rating system
 
 ## Overview
 
-The Gentry's Quest Rating System evaluates and ranks a user's items to determine their **GP (Gentry Points)** and *
-*Ranking**.
+The Gentry's Quest Rating System evaluates and ranks a user's items to determine their **GP (Gentry Points)** and **Ranking**.
 
 ### Ratings:
 
