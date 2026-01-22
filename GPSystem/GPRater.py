@@ -5,9 +5,9 @@ class GPRater:
     character_factor = 1
     character_rating_enabled = True
     artifact_factor = 1
-    artifact_rating_enabled = True
+    artifact_rating_enabled = False
     weapon_factor = 1
-    weapon_rating_enabled = True
+    weapon_rating_enabled = False
     max_item_rating = 100
 
     # character factors
@@ -347,10 +347,16 @@ class GPRater:
         """
 
         if type == "artifact":
+            if not GPRater.artifact_rating_enabled:
+                return 0
             return GPRater.get_artifact_rating(metadata)
         elif type == "character":
+            if not GPRater.character_rating_enabled:
+                return 0
             return GPRater.get_character_rating(metadata)
         elif type == "weapon":
+            if not GPRater.weapon_rating_enabled:
+                return 0
             return GPRater.get_weapon_rating(metadata)
         else:
             return 0
