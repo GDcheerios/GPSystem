@@ -189,7 +189,7 @@ class GPRater:
         """
 
         try:
-            return item["experience"]["xp"] > 0 or item["experience"]["level"] > 1
+            return item["CurrentXp"] > 0 or item["Level"] > 1
         except KeyError as e:
             print(f"GPRater found an issue: {e}")
             return False
@@ -259,6 +259,10 @@ class GPRater:
 
         try:
             character_rating = 0
+
+            if not GPRater.is_ratable(character):
+                return 0
+
             difficulty = (character["Level"] / 20) + 1
             star_rating = character["StarRating"] * GPRater.character_star_rating_factor
             level = character["Level"] * GPRater.character_level_factor
