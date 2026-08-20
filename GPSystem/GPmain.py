@@ -25,7 +25,7 @@ def rank(length: int = 0) -> tuple[list, list]:
                 weighted,
                 rank,
                 tier
-            from gq_rankings
+            from gq.profiles
             order by weighted desc
             """
         )
@@ -37,7 +37,7 @@ def rank(length: int = 0) -> tuple[list, list]:
                 weighted,
                 rank,
                 tier
-            from gq_rankings
+            from gq.profiles
             order by weighted desc
             limit %s
             """,
@@ -57,7 +57,7 @@ def rank(length: int = 0) -> tuple[list, list]:
                     metadata,
                     owner
                 from
-                    gq_items
+                    gq.items
                 where owner = %s
                 """, params=(user['id'],)
             )
@@ -138,7 +138,7 @@ if __name__ == '__main__':
 
             db.execute(
                 """
-                UPDATE gq_rankings
+                UPDATE gq.profiles
                 SET 
                     weighted = %s,
                     unweighted = %s,
